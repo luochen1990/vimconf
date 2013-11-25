@@ -1,0 +1,2 @@
+luoc.vba: call delete('E:\Dropbox\Portable\vim\vimfiles/ftdetect/luoc.vim')|call delete('E:\Dropbox\Portable\vim\vimfiles/ftplugin/luoc.vim')|call delete('E:\Dropbox\Portable\vim\vimfiles/syntax/luoc.vim')|call delete('E:\Dropbox\Portable\vim\vimfiles/indent/luoc.vim')
+supertab.vmb: call delete('E:\Dropbox\Portable\vim\vimfiles/doc/supertab.txt')|call delete('E:\Dropbox\Portable\vim\vimfiles/plugin/supertab.vim')
