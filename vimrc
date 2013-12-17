@@ -10,6 +10,7 @@ func s:init()
 endfunc
 
 func s:general()
+	let $useage = ''
 	if exists('$vimrc') && match($vimrc , '\<Dropbox\>') >= 0
 		let $Dropbox = strpart($vimrc, 0, match($vimrc,'\<Dropbox\>')+7)
 		let $ws = '$Dropbox/Workspace/vim'
@@ -25,6 +26,8 @@ func s:general()
 	if exists('$vimrc') && isdirectory($vimrc.'/../vimdir')
 		let $vimdir = '$vimrc/../vimdir'
 		let &rtp = $vimdir.','.&rtp.','.$vimdir.'/after'
+	else
+		let $vimdir = has('win32')? '$HOME/vimfiles' : '$HOME/.vim'
 	endif
 	cd $ws
 	"auto bufenter * silent! lcd %:p:h "LIKE AUTOCHDIR
@@ -270,7 +273,7 @@ func s:keymap()
 		nnoremap f 0f
 		noremap n nzz
 		noremap <s-n> <s-n>zz
-		vnoremap n :<c-u>let @/=g:get_selected_text()<cr><esc>nzz
+		vnoremap n :<c-u>let @/=escape(g:get_selected_text(),'\')<cr><esc>nzz
 		vnoremap <s-n> :<c-u>let @/=g:get_selected_text()<cr><esc><s-n>zz
 		noremap * *zz
 		noremap <c-o> <c-o>zz

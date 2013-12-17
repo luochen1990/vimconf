@@ -122,6 +122,10 @@ func g:compileRun()
 		exe '! coffee -c %:p'
 	endif
 	
+	if &filetype == 'lisp'
+		exe '! sbcl --disable-debugger --script %:p'
+	endif
+	
 	if &filetype == 'html'
 		exe '!start C:\Program Files\Internet Explorer\iexplore.exe %:p'
 	endif
