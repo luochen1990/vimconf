@@ -1,6 +1,6 @@
 
 func! pep8#adjust_format()
-	%s/\(\w\) *\([,:(]\)/\1\2/g
+	%s/\([a-zA-Z0-9_'")]\) *\([,:(]\)/\1\2/g
 "	call s:adjust_operator()
 "	func s:adjust_operator()
 "		for i in range(1 , line('$'))

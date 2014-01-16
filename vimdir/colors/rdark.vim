@@ -22,10 +22,10 @@ endif
 let colors_name = "rdark"
 
 " Current Line
-hi CursorLine guibg=#191f21
+hi CursorLine guibg=#292f31
 
 " Default Colors
-hi Normal guifg=#babdb6 guibg=#1e2426
+hi Normal guifg=#babdb6 guibg=#303336
 hi NonText guifg=#2c3032 guibg=#2c3032 gui=none
 hi Cursor guibg=#babdb6
 hi ICursor guibg=#babdb6

@@ -3,7 +3,7 @@ au bufnewfile,bufread * if match(getline(1) , '--lua') != -1 | set ft=lua | endi
 
 au bufnewfile,bufread * if match(getline(1) , '//cpp11') != -1 | set ft=cpp11 | endif
 
-au bufnewfile,bufread * if match(getline(1) , 'python2') != -1 | set ft=python | endif
+au bufnewfile,bufread * if match(getline(1) , 'python27') != -1 | set ft=python27 | endif
 
-au bufnewfile,bufread * if match(getline(1) , 'python3') != -1 | set ft=python3 | endif
+au bufnewfile,bufread * if match(getline(1) , 'python33') != -1 | set ft=python33 | endif
 

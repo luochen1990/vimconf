@@ -24,23 +24,23 @@ func s:general()
 		endif
 	endif
 	if exists('$vimrc') && isdirectory($vimrc.'/../vimdir')
-		let $vimdir = '$vimrc/../vimdir'
+		let $vimdir = $vimrc.'/../vimdir'
 		let &rtp = $vimdir.','.&rtp.','.$vimdir.'/after'
 	else
-		let $vimdir = has('win32')? '$HOME/vimfiles' : '$HOME/.vim'
+		let $vimdir = has('win32')? $HOME.'/vimfiles' : $HOME.'/.vim'
 	endif
 	cd $ws
 	"auto bufenter * silent! lcd %:p:h "LIKE AUTOCHDIR
-	
-	set nocompatible 
+
+	set nocompatible
 	set autoread "lazyredraw
 	set visualbell "t_vb=
-	set history=1000 
+	set history=1000
 	set nowritebackup nobackup noswapfile
-	set ignorecase smartcase	
-	"set tags=tags; 
+	set ignorecase smartcase
+	"set tags=tags;
 	set keymodel=startsel,stopsel selectmode=
-	set showtabline=1							
+	set showtabline=1
 	"MOVE CURSOR TO LATEST POS
 	auto bufreadpost * silent! exec "normal! g'\""
 
@@ -58,7 +58,7 @@ func s:general()
 			"imap <silent> <esc> <esc>:set iminsert=0<cr>
 			set iminsert=0
 		endif
-	else 
+	else
 		set showmatch matchtime=2
 	endif
 endfunc
@@ -93,57 +93,42 @@ endfunc
 func s:editor()
 	"call pathogen#infect()
 	filetype plugin indent on
-	
+
 	syntax enable
 	silent! colorscheme desert
 	silent! colorscheme rdark
 	auto guienter * set cursorline
 	set number showmode showcmd ruler
-	if v:version >= 704 |set relativenumber |endif
-	
+	"if v:version >= 704 |set relativenumber |endif
+
 	set nowrapscan incsearch hlsearch
-	
-	set virtualedit=block,onemore
+
+	set virtualedit=block
 	set autoindent smartindent
 	set noexpandtab nosmarttab tabstop=4 shiftwidth=4 softtabstop=4 " :retab or :retab!
 
 	set laststatus=2
-	
+
 	set nowrap sidescrolloff=20 sidescroll=1
-	set wrap textwidth=0 linebreak formatoptions+=mM 
+	set wrap textwidth=0 linebreak formatoptions+=mM
 	set backspace=start,indent,eol whichwrap=b,<,>,[,]
 endfunc
 
 func s:bundle()
 	func s:vundle_conf()
-		" original repos on github
-		"Bundle 'tpope/vim-fugitive'
-		"Bundle 'Lokaltog/vim-easymotion'
-		"Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
-		"Bundle 'tpope/vim-rails.git'
-		" vim-scripts repos
-		"Bundle 'L9'
-		"Bundle 'FuzzyFinder'
-		" non github repos
-		"Bundle 'git://git.wincent.com/command-t.git'
-		" git repos on your local machine (ie. when working on your own plugin)
-		"Bundle 'file:///Users/gmarik/path/to/plugin'
-		" ...
+		Bundle 'kchmck/vim-coffee-script'
+		Bundle 'luochen1990/rainbow'
+		Bundle 'luochen1990/select-and-search'
 	endfunc
 
-	filetype off                   " required!
-	if exists('$vimdir')
+	if isdirectory($vimdir.'/bundle/vundle')
+		filetype off                   " required!
 		set rtp+=$vimdir/bundle/vundle/
-	else
-		set rtp+=.vim/bundle/vundle/
+		call vundle#rc($vimdir.'/bundle')
+		Bundle 'gmarik/vundle'
+		call s:vundle_conf()
+		filetype plugin indent on     " required!
 	endif
-	call vundle#rc($vimdir.'/bundle')
-	Bundle 'gmarik/vundle'
-	Bundle 'kchmck/vim-coffee-script'
-	"Bundle 'scrooloose/nerdtree'
-	"call s:vundle_conf()
-	filetype plugin indent on     " required!
-	" Brief help
 	" :BundleList          - list configured bundles
 	" :BundleInstall(!)    - install(update) bundles
 	" :BundleSearch(!) foo - search(or refresh cache first) for foo
@@ -153,18 +138,9 @@ func s:bundle()
 endfunc
 
 func s:plugins()
-	let g:rainbow_active = 1
-	let g:rainbow_operators = 1
-	let g:rainbow_load_separately = [
-	\	[ '*' , [['(', ')'], ['\[', '\]'], ['{', '}']] ],
-	\	[ '*.tex' , [['(', ')'], ['\[', '\]']] ],
-	\	[ '*.{html,htm}' , [['(', ')'], ['\[', '\]'], ['{', '}'], ['<\a[^>]*[^/]>\|<\a>', '</[^>]*>']] ],
-	\]
-	let g:rainbow_guifgs = ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick',]
-	
 	let g:mystatusline_activated = 1
-	let g:luoc_expert = 1
-    
+	let g:rainbow_active = 1
+	let g:select_and_search_active = 1
 	"let loaded_nerd_tree=1
 	let NERDChristmasTree=1
 	let NERDTreeCaseSensitiveSort=1
@@ -223,7 +199,7 @@ func s:keymap()
 		call s:my_shotcut()
 		call s:mode_switching()
 	endfunc
-	
+
 	func s:my_shotcut()
 		command -nargs=? -range=% Cid :let i=1|<line1>,<line2>g/^/s/^/\=printf(<q-args>!=''?<q-args>:"%d",i)/|let i+=1|nohl
 		command -nargs=? -range=% Cidx :let i=1|<line1>,<line2>g//s/^/\=printf(<q-args>!=''?<q-args>:"%d",i)/|let i+=1|nohl
@@ -256,13 +232,13 @@ func s:keymap()
 		endfunc
 		call s:map_paratheses_op('w')
 	endfunc
-	
+
 	func s:compiler_invoking()
 		nnoremap cr :call g:compilers()<cr>
 		nnoremap <f9> :call g:compilers()<cr>
 		inoremap <f9> <esc>:call g:compilers()<cr>
 	endfunc
-	
+
 	func s:line_browsing()
 		"au insertleave,cursormoved * normal zz
 		auto guienter * nnoremap <esc> :nohl<cr>zz
@@ -273,8 +249,8 @@ func s:keymap()
 		nnoremap f 0f
 		noremap n nzz
 		noremap <s-n> <s-n>zz
-		vnoremap n :<c-u>let @/=escape(g:get_selected_text(),'\')<cr><esc>nzz
-		vnoremap <s-n> :<c-u>let @/=g:get_selected_text()<cr><esc><s-n>zz
+		"vnoremap n :<c-u>let @/='\V'.escape(g:get_selected_text(),'\')<cr><esc>nzz
+		"vnoremap <s-n> :<c-u>let @/=g:get_selected_text()<cr><esc><s-n>zz
 		noremap * *zz
 		noremap <c-o> <c-o>zz
 		noremap <c-i> <c-i>zz
@@ -283,7 +259,7 @@ func s:keymap()
 		noremap <s-h> b
 		noremap <s-l> e
 	endfunc
-	
+
 	func s:clipboard_synchronizing()
 		"set clipboard+=unnamed
 		nnoremap y "+y
@@ -295,7 +271,7 @@ func s:keymap()
 		vnoremap p "+p
 		inoremap <a-p> <esc>"+p
 	endfunc
-	
+
 	func s:tab_browsing()
 		nnoremap w :update<cr>
 		nnoremap q :q<cr>
@@ -314,7 +290,7 @@ func s:keymap()
 		inoremap <c-j> <esc><c-w>j
 		inoremap <c-k> <esc><c-w>k
 	endfunc
-	
+
 	func s:format_adjusting()
 		nnoremap <space> i<space><esc><right>
 		nnoremap <cr> <s-i><cr><esc>
@@ -323,7 +299,7 @@ func s:keymap()
 		vnoremap <bs> d
 		"inoremap <s-bs> <esc><right>dbi
 	endfunc
-	
+
 	func s:mode_switching()
 		nnoremap b <c-v>
 		vnoremap b <c-v>
@@ -334,10 +310,9 @@ func s:keymap()
 		vnoremap <s-v> v
 		nnoremap <s-q> q
 	endfunc
-	
+
 	call s:keymap_init()
 endfunc
 
 call s:init()
-
 " vim: set ff=unix ft=vim ts=4:

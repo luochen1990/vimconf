@@ -86,21 +86,21 @@ func g:compileRun()
 		execute '!start cmd /c g++ %:p:r.cpp -Wall -Wno-unused -std=c++98 -o '.out.' & '.run.' & pause'
 	endif
 	
-	if &filetype == 'python'
-		execute "!start cmd /c python %:p & pause"
+	if &filetype[:5] == 'python'
+		execute "!start cmd /c ".&filetype." %:p & pause"
 	endif
 	
-	if &filetype == 'pythonw'
-		execute "!start cmd /c pythonw %:p"
-	endif
-	
-	if &filetype == 'python3'
-		execute "!start cmd /c python3 %:p & pause"
-	endif
-	
-	if &filetype == 'pythonw3'
-		execute "!start cmd /c pythonw3 %:p"
-	endif
+	"if &filetype == 'pythonw'
+	"	execute "!start cmd /c pythonw %:p"
+	"endif
+	"
+	"if &filetype == 'python3'
+	"	execute "!start cmd /c python3 %:p & pause"
+	"endif
+	"
+	"if &filetype == 'pythonw3'
+	"	execute "!start cmd /c pythonw3 %:p"
+	"endif
 	
 	if &filetype == 'tex'
 		exe '!start cmd /c del %:p:r.pdf & xelatex %:p:r.tex & del %:p:r.aux & del %:p:r.log'
@@ -119,11 +119,14 @@ func g:compileRun()
 	endif
 	
 	if &filetype == 'coffee'
-		exe '! coffee -c %:p'
+		exe '! coffee -c --map %:p && node %:p:r.js'
+		"if filereadable(expand('%:p:r').'.html')
+		"	exe '! chrome --Incognito %:p:r.html'
+		"endif
 	endif
 	
 	if &filetype == 'lisp'
-		exe '! sbcl --disable-debugger --script %:p'
+		exe '! sbcl --disable-debugger --load %:p'
 	endif
 	
 	if &filetype == 'html'
