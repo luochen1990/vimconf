@@ -3,14 +3,12 @@ func s:init()
 	call s:general()
 	call s:font()
 	call s:editor()
-	call s:bundle()
 	call s:plugins()
 	call s:global()
 	call s:keymap()
 endfunc
 
 func s:general()
-	let $useage = ''
 	if exists('$vimrc') && match($vimrc , '\<Dropbox\>') >= 0
 		let $Dropbox = strpart($vimrc, 0, match($vimrc,'\<Dropbox\>')+7)
 		let $ws = '$Dropbox/Workspace/vim'
@@ -64,13 +62,17 @@ func s:general()
 endfunc
 
 func s:encoding()
+	if ! has('multi_byte') |call ALERT_vim_not_has_multi_byte() |endif
+	if &termencoding == '' |let &termencoding = &encoding |endif
 	set encoding=utf-8
-	set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
+	setglobal fileencoding=utf-8
+	"setglobal bomb
+	set fileencodings=ucs-bom,utf-8,gb2312,cp936,gb18030,big5,euc-jp,euc-kr,latin1
 	if has('multi_byte') && v:version > 601 |set ambiwidth=double |endif
 	"language messages en_us.utf-8
 	if has('win32') || has('win64') |language messages zh_cn.utf-8 |endif
 	"set helplang=zh
-	"set langmenu=zh_cn.utf-8 |source $vimruntime/delmenu.vim  |source $vimruntime/menu.vim
+	"set langmenu=zh_cn.utf-8 |source $vimruntime/delmenu.vim |source $vimruntime/menu.vim
 	set fileformat=unix
 	auto bufenter * silent! if &modifiable && line('$') == 1 && getline('$') == '' |set fileformat=unix |update |endif
 endfunc
@@ -106,6 +108,7 @@ func s:editor()
 	set virtualedit=block
 	set autoindent smartindent
 	set noexpandtab nosmarttab tabstop=4 shiftwidth=4 softtabstop=4 " :retab or :retab!
+"# vim: set expandtab smarttab tabstop=4 shiftwidth=4 softtabstop=4 ft=python:
 
 	set laststatus=2
 
@@ -114,30 +117,28 @@ func s:editor()
 	set backspace=start,indent,eol whichwrap=b,<,>,[,]
 endfunc
 
-func s:bundle()
+func s:plugins()
 	func s:vundle_conf()
 		Bundle 'kchmck/vim-coffee-script'
 		Bundle 'luochen1990/rainbow'
 		Bundle 'luochen1990/select-and-search'
+		" :BundleList			- list configured bundles
+		" :BundleInstall(!)		- install(update) bundles
+		" :BundleSearch(!) foo	- search(or refresh cache first) for foo
+		" :BundleClean(!)		- confirm(or auto-approve) removal of unused bundles
+		" see :h vundle for more details or wiki for FAQ
+		" NOTE: comments after Bundle command are not allowed..
 	endfunc
 
 	if isdirectory($vimdir.'/bundle/vundle')
-		filetype off                   " required!
+		filetype off
 		set rtp+=$vimdir/bundle/vundle/
 		call vundle#rc($vimdir.'/bundle')
 		Bundle 'gmarik/vundle'
 		call s:vundle_conf()
-		filetype plugin indent on     " required!
+		filetype plugin indent on
 	endif
-	" :BundleList          - list configured bundles
-	" :BundleInstall(!)    - install(update) bundles
-	" :BundleSearch(!) foo - search(or refresh cache first) for foo
-	" :BundleClean(!)      - confirm(or auto-approve) removal of unused bundles
-	" see :h vundle for more details or wiki for FAQ
-	" NOTE: comments after Bundle command are not allowed..
-endfunc
 
-func s:plugins()
 	let g:mystatusline_activated = 1
 	let g:rainbow_active = 1
 	let g:select_and_search_active = 1
@@ -153,7 +154,7 @@ func s:global()
 		let tab_used = false
 		lines = getline(1 , 100)
 		for line in lines
-
+		endfor
 	endfunc
 
 	func g:compilers()
@@ -188,7 +189,6 @@ func s:global()
 	endfunc
 endfunc
 
-
 func s:keymap()
 	func s:keymap_init()
 		call s:compiler_invoking()
@@ -205,6 +205,7 @@ func s:keymap()
 		command -nargs=? -range=% Cidx :let i=1|<line1>,<line2>g//s/^/\=printf(<q-args>!=''?<q-args>:"%d",i)/|let i+=1|nohl
 		command -range=% Cdbl :<line1>,<line2>g/^\s*$/d
 		command -nargs=+ Cvds :vertical diffsplit <args>
+		command UniqueSpaces :%s/\S\zs\s\+/ /g
 		nnoremap <f10> :call pep8#adjust_format()<cr>
 		nnoremap <f1> :nohl<cr>
 		nnoremap a <s-a>
@@ -213,7 +214,7 @@ func s:keymap()
 		nnoremap s :%s///gc<left><left><left>
 		vnoremap s :s///g<left><left>
 		noremap \h :tab h<space>
-		"nnoremap  <leader>m :%s/<c-v><cr>//ge<cr>'tzt'm
+		"nnoremap <leader>m :%s/<c-v><cr>//ge<cr>'tzt'm
 		func s:map_paratheses_op(start_with)
 			"vnoremap <expr> w g:wrap_with_parentheses(v:operator)
 			let cmd_pat = 'vnoremap %s%s%s :<c-u>call g:substitute_parentheses("%s", "%s", %s)<cr>%s'
@@ -244,6 +245,8 @@ func s:keymap()
 		auto guienter * nnoremap <esc> :nohl<cr>zz
 		noremap j gjzz
 		noremap k gkzz
+		noremap ^ 0
+		noremap 0 ^
 		noremap - $
 		vnoremap - $h
 		nnoremap f 0f

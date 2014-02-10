@@ -63,7 +63,8 @@ func g:compileRun()
 	if &filetype == 'cpp11'
 		let out = '%:p:h\out'
 		let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
-		execute '!start cmd /c g++ %:p:r.cpp -Wall -Wno-unused -std=c++11 -o '.out.' & '.run.' & pause'
+		execute '!start cmd /c g++ %:p:r.cpp -Wall -Wno-unused -O2 -lboost_coroutine -std=c++11 -o '.out.' & '.run.' & pause'
+		"g++ Test.cpp -o Test -Wall -O2 -lboost_coroutine -std=c++11
 	endif
 	
 	if &filetype == 'cpp'
