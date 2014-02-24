@@ -98,7 +98,7 @@ func s:editor()
 
 	syntax enable
 	silent! colorscheme desert
-	silent! colorscheme rdark
+	silent! colorscheme rdark2
 	auto guienter * set cursorline
 	set number showmode showcmd ruler
 	"if v:version >= 704 |set relativenumber |endif
@@ -119,9 +119,14 @@ endfunc
 
 func s:plugins()
 	func s:vundle_conf()
-		Bundle 'kchmck/vim-coffee-script'
 		Bundle 'luochen1990/rainbow'
 		Bundle 'luochen1990/select-and-search'
+		Bundle 'rdark'
+		Bundle 'genindent.vim'
+		Bundle 'kchmck/vim-coffee-script'
+		Bundle 'scrooloose/syntastic'
+		Bundle 'ervandew/supertab'
+		"Bundle 'davidhalter/jedi-vim'
 		" :BundleList			- list configured bundles
 		" :BundleInstall(!)		- install(update) bundles
 		" :BundleSearch(!) foo	- search(or refresh cache first) for foo
@@ -142,6 +147,14 @@ func s:plugins()
 	let g:mystatusline_activated = 1
 	let g:rainbow_active = 1
 	let g:select_and_search_active = 1
+	let g:jedi#auto_vim_configuration = 0
+	let g:jedi#goto_assignments_command = "<leader>g"
+	let g:jedi#goto_definitions_command = "<leader>d"
+	let g:jedi#documentation_command = "K"
+	let g:jedi#usages_command = "<leader>n"
+	"let g:jedi#completions_command = "<tab>"
+	let g:jedi#rename_command = "<leader>r"
+	let g:jedi#show_call_signatures = "1"
 	"let loaded_nerd_tree=1
 	let NERDChristmasTree=1
 	let NERDTreeCaseSensitiveSort=1
@@ -150,6 +163,24 @@ func s:plugins()
 endfunc
 
 func s:global()
+
+	"func! s:py_ver()
+	"	python << EOF
+	"		import sys
+	"		print(sys.version)
+	"	EOF
+	"endfunc 
+
+	"func! s:py3_ver()
+	"	python3 << EOF
+	"		import sys
+	"		print(sys.version)
+	"	EOF
+	"endfunc
+
+	command! -nargs=0 -bar PyV call s:py_ver()
+	command! -nargs=0 -bar Py3V call s:py3_ver()
+
 	func g:indent_detect()
 		let tab_used = false
 		lines = getline(1 , 100)

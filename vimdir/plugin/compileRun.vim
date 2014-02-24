@@ -120,7 +120,8 @@ func g:compileRun()
 	endif
 	
 	if &filetype == 'coffee'
-		exe '! coffee -c --map %:p && node %:p:r.js'
+		"exe '! coffee -c --map %:p && node %:p:r.js'
+		exe '! coffee -c %:p && node %:p:r.js'
 		"if filereadable(expand('%:p:r').'.html')
 		"	exe '! chrome --Incognito %:p:r.html'
 		"endif
