@@ -147,18 +147,18 @@ func s:plugins()
 	let g:mystatusline_activated = 1
 	let g:rainbow_active = 1
 	let g:select_and_search_active = 1
-	let g:jedi#auto_vim_configuration = 0
-	let g:jedi#goto_assignments_command = "<leader>g"
-	let g:jedi#goto_definitions_command = "<leader>d"
-	let g:jedi#documentation_command = "K"
-	let g:jedi#usages_command = "<leader>n"
-	"let g:jedi#completions_command = "<tab>"
-	let g:jedi#rename_command = "<leader>r"
-	let g:jedi#show_call_signatures = "1"
+	"let g:jedi#auto_vim_configuration = 0
+	"let g:jedi#goto_assignments_command = "<leader>g"
+	"let g:jedi#goto_definitions_command = "<leader>d"
+	"let g:jedi#documentation_command = "K"
+	"let g:jedi#usages_command = "<leader>n"
+	""let g:jedi#completions_command = "<tab>"
+	"let g:jedi#rename_command = "<leader>r"
+	"let g:jedi#show_call_signatures = "1"
 	"let loaded_nerd_tree=1
-	let NERDChristmasTree=1
-	let NERDTreeCaseSensitiveSort=1
-	let NERDTreeQuitOnOpen=1
+	"let NERDChristmasTree=1
+	"let NERDTreeCaseSensitiveSort=1
+	"let NERDTreeQuitOnOpen=1
 	nnoremap <silent> <f2> :NERDTree<CR>
 endfunc
 
