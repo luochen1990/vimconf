@@ -1,6 +1,7 @@
 Windows Registry Editor Version 5.00
 
 [HKEY_CLASSES_ROOT\*\Shell\Edit with Vim]
-@="Edit with &Vim"
+@="Vim it"
 [HKEY_CLASSES_ROOT\*\Shell\Edit with Vim\command]
-@="\"E:\\Dropbox\\Portable\\vim\\vim73\\gvim.exe\" -p --remote-tab-silent \"%1\""
+@="\"D:\\Programs\\Vim\\vim74\\gvim.exe\" -p --remote-tab-silent \"%1\""
+

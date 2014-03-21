@@ -1,2 +1,2 @@
-au BufNewFile,BufRead *.luoc set ft=luoc
+au bufnewfile,bufread *.luoc set ft=luoc
 

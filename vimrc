@@ -123,10 +123,12 @@ func s:plugins()
 		Bundle 'luochen1990/select-and-search'
 		Bundle 'rdark'
 		Bundle 'genindent.vim'
+		Bundle 'python.vim'
 		Bundle 'kchmck/vim-coffee-script'
 		Bundle 'scrooloose/syntastic'
 		Bundle 'ervandew/supertab'
-		"Bundle 'davidhalter/jedi-vim'
+		Bundle 'justinmk/vim-sneak'
+		Bundle 'davidhalter/jedi-vim'
 		" :BundleList			- list configured bundles
 		" :BundleInstall(!)		- install(update) bundles
 		" :BundleSearch(!) foo	- search(or refresh cache first) for foo
@@ -163,7 +165,23 @@ func s:plugins()
 endfunc
 
 func s:global()
+	func Repr(s)
+		let known = {13: '\r', 10: '\n', 9: '\t', 92: '\\'}
+		let r = ''
+		for i in range(len(a:s))
+			let n = char2nr(a:s[i])
+			let r .= has_key(known, n) ? known[n] : ((n >= 32 && n != 127) ? a:s[i] : printf('\x%02x', n))
+		endfor
+		return '"'.r.'"'
+	endfunc
 
+	func S2s()
+		let ls = [['，', ','], ['。', '.'], ['‘', "'"], ['“', '"'], ['”', '"'], ['：', ':'], ['（', '('], ['）', ')'], ['《', '<'], ['》', '>'], ['【', '['], ['】', ']'], ['｛', '{'], ['｝', '}'], ['？', '?'], ['！', '!'], ['·', '`'], ['～', '~']]
+
+		for [a, b] in ls
+			exec 'silent! :%s/'.a.'/'.b.'/g'
+		endfor
+	endfunc
 	"func! s:py_ver()
 	"	python << EOF
 	"		import sys
@@ -232,8 +250,10 @@ func s:keymap()
 	endfunc
 
 	func s:my_shotcut()
-		command -nargs=? -range=% Cid :let i=1|<line1>,<line2>g/^/s/^/\=printf(<q-args>!=''?<q-args>:"%d",i)/|let i+=1|nohl
-		command -nargs=? -range=% Cidx :let i=1|<line1>,<line2>g//s/^/\=printf(<q-args>!=''?<q-args>:"%d",i)/|let i+=1|nohl
+		command -nargs=? -range=% Lno :let i=1|<line1>,<line2>g/^/s/^/\=<q-args>!=''?eval(<q-args>):printf("%d",i)/|let i+=1|nohl
+		command -nargs=? -range=% Lnos :let i=1|<line1>,<line2>g//s/^/\=<q-args>!=''?eval(<q-args>):printf("%d",i)/|let i+=1|nohl
+		"command -nargs=? -range=% Cid :let i=1|<line1>,<line2>g/^/s/^/\=printf(<q-args>!=''?<q-args>:"%d",i)/|let i+=1|nohl
+		"command -nargs=? -range=% Cidx :let i=1|<line1>,<line2>g//s/^/\=printf(<q-args>!=''?<q-args>:"%d",i)/|let i+=1|nohl
 		command -range=% Cdbl :<line1>,<line2>g/^\s*$/d
 		command -nargs=+ Cvds :vertical diffsplit <args>
 		command UniqueSpaces :%s/\S\zs\s\+/ /g
@@ -321,8 +341,6 @@ func s:keymap()
 		inoremap <c-s-tab> <esc>g<s-t>
 		nnoremap <c-j> <c-w>j
 		nnoremap <c-k> <c-w>k
-		inoremap <c-j> <esc><c-w>j
-		inoremap <c-k> <esc><c-w>k
 	endfunc
 
 	func s:format_adjusting()
