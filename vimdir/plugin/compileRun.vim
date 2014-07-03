@@ -1,3 +1,89 @@
+func g:compileRun()
+	if &filetype == 'cpp11'
+		let out = '%:p:h\out'
+		let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
+		execute '!start cmd /c g++ %:p -Wall -Wno-unused -O2 -lboost_coroutine -std=c++11 -o '.out.' & '.run.' & pause'
+		"g++ Test.cpp -o Test -Wall -O2 -lboost_coroutine -std=c++11
+	endif
+	
+	if &filetype == 'cpp'
+		if match(getline(1) , '//vc') != -1
+			let vcpath = 'f:\desktop\vc2010'
+			"let vcpath = expand('$vc')
+			let vcload = 'd:\appfordevelop\vs10\common7\tools\vsvars32.bat'
+			exec '!start cmd /c '.vcload.' & cl %:p & %:p:r.exe & del %:p:r.obj & pause'
+		else
+			let out = '%:p:h\out'
+			let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
+			execute '!start cmd /c g++ %:p -Wall -Wno-unused -std=c++98 -o '.out.' & '.run.' & pause'
+		endif
+	endif
+	
+	if expand('%:e') == 'cin'
+		e %<.cpp | normal ggVG"+y
+		let out = '%:p:h\out'
+		let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
+		execute '!start cmd /c g++ %:p:r.cpp -Wall -Wno-unused -std=c++98 -o '.out.' & '.run.' & pause'
+	endif
+	
+	if &filetype[:5] == 'python'
+		execute "!start cmd /c ".&filetype." %:p & pause"
+	endif
+	
+	"if &filetype == 'pythonw'
+	"	execute "!start cmd /c pythonw %:p"
+	"endif
+	"
+	"if &filetype == 'python3'
+	"	execute "!start cmd /c python3 %:p & pause"
+	"endif
+	"
+	"if &filetype == 'pythonw3'
+	"	execute "!start cmd /c pythonw3 %:p"
+	"endif
+	
+	if &filetype == 'tex'
+		exe '!start cmd /c del %:p:r.pdf & xelatex %:p:r.tex & del %:p:r.aux & del %:p:r.log'
+		let cnt = 0
+		while cnt < 10
+			let cnt += 1
+			sleep 500m
+			if filereadable(expand('%:p:r').'.pdf')
+				exe '!start cmd /c acrord32 %:p:r.pdf'
+				break
+			endif
+		endwhile
+		if cnt == 10
+			exe '! cmd /c echo file unreadable !'
+		endif
+	endif
+	
+	if &filetype == 'coffee'
+		if filereadable(expand('%:p:r').'.html')
+			if filereadable(expand('%:p:r').'.js')
+				let r = system('coffee -cm '.expand('%:p'))
+				echo r
+			endif
+			exe 'silent !start chrome --allow-file-access-from-files --Incognito %:p:r.html'
+		else
+			exe '!start cmd /k coffee %:p'
+		endif
+	endif
+	
+	if &filetype == 'lisp'
+		exe '! sbcl --disable-debugger --load %:p'
+	endif
+
+	if &filetype == 'scheme'
+		exe '! racket -r %:p'
+	endif
+
+	if &filetype == 'html'
+		exe 'silent !start chrome --allow-file-access-from-files --Incognito %:p'
+		"exe '!start iexplore %:p'
+	endif
+endfunc
+
 "func g:compileRun_qf()
 "	if &filetype == 'cpp11'
 "		"let out = expand('%:p:h').'\out'
@@ -58,83 +144,6 @@
 "		endif
 "	endif
 "endfunc
-
-func g:compileRun()
-	if &filetype == 'cpp11'
-		let out = '%:p:h\out'
-		let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
-		execute '!start cmd /c g++ %:p:r.cpp -Wall -Wno-unused -O2 -lboost_coroutine -std=c++11 -o '.out.' & '.run.' & pause'
-		"g++ Test.cpp -o Test -Wall -O2 -lboost_coroutine -std=c++11
-	endif
-	
-	if &filetype == 'cpp'
-		if match(getline(1) , '//vc') != -1
-			let vcpath = 'f:\desktop\vc2010'
-			"let vcpath = expand('$vc')
-			let vcload = 'd:\appfordevelop\vs10\common7\tools\vsvars32.bat'
-			exec '!start cmd /c '.vcload.' & cl %:p & %:p:r.exe & del %:p:r.obj & pause'
-		else
-			let out = '%:p:h\out'
-			let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
-			execute '!start cmd /c g++ %:p:r.cpp -Wall -Wno-unused -std=c++98 -o '.out.' & '.run.' & pause'
-		endif
-	endif
-	
-	if expand('%:e') == 'cin'
-		e %<.cpp | normal ggVG"+y
-		let out = '%:p:h\out'
-		let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
-		execute '!start cmd /c g++ %:p:r.cpp -Wall -Wno-unused -std=c++98 -o '.out.' & '.run.' & pause'
-	endif
-	
-	if &filetype[:5] == 'python'
-		execute "!start cmd /c ".&filetype." %:p & pause"
-	endif
-	
-	"if &filetype == 'pythonw'
-	"	execute "!start cmd /c pythonw %:p"
-	"endif
-	"
-	"if &filetype == 'python3'
-	"	execute "!start cmd /c python3 %:p & pause"
-	"endif
-	"
-	"if &filetype == 'pythonw3'
-	"	execute "!start cmd /c pythonw3 %:p"
-	"endif
-	
-	if &filetype == 'tex'
-		exe '!start cmd /c del %:p:r.pdf & xelatex %:p:r.tex & del %:p:r.aux & del %:p:r.log'
-		let cnt = 0
-		while cnt < 10
-			let cnt += 1
-			sleep 500m
-			if filereadable(expand('%:p:r').'.pdf')
-				exe '!start cmd /c acrord32 %:p:r.pdf'
-				break
-			endif
-		endwhile
-		if cnt == 10
-			exe '! cmd /c echo file unreadable !'
-		endif
-	endif
-	
-	if &filetype == 'coffee'
-		"exe '! coffee -c --map %:p && node %:p:r.js'
-		exe '! coffee -c %:p && node %:p:r.js'
-		"if filereadable(expand('%:p:r').'.html')
-		"	exe '! chrome --Incognito %:p:r.html'
-		"endif
-	endif
-	
-	if &filetype == 'lisp'
-		exe '! sbcl --disable-debugger --load %:p'
-	endif
-	
-	if &filetype == 'html'
-		exe '!start C:\Program Files\Internet Explorer\iexplore.exe %:p'
-	endif
-endfunc
 
 "func g:compileCmd()
 "	if &ft == 'cpp'

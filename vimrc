@@ -28,7 +28,7 @@ func s:general()
 		let $vimdir = has('win32')? $HOME.'/vimfiles' : $HOME.'/.vim'
 	endif
 	cd $ws
-	"auto bufenter * silent! lcd %:p:h "LIKE AUTOCHDIR
+	auto bufenter * silent! lcd %:p:h "LIKE AUTOCHDIR
 
 	set nocompatible
 	set autoread "lazyredraw
@@ -48,6 +48,7 @@ func s:general()
 			set mouse=a mousefocus
 		endif
 		if has('win32') || has('win64')
+			auto guienter * silent! call libcallnr("vimtweak.dll", 'SetAlpha', 220)
 			set winaltkeys=no
 			auto guienter * simalt ~x "MAXIMIZE WINDOW
 			noremap <a-space> :simalt ~<cr>
@@ -62,17 +63,16 @@ func s:general()
 endfunc
 
 func s:encoding()
-	if ! has('multi_byte') |call ALERT_vim_not_has_multi_byte() |endif
+	if !has('multi_byte') |echo 'ALERT: vim_not_has_multi_byte' |endif
 	if &termencoding == '' |let &termencoding = &encoding |endif
 	set encoding=utf-8
 	setglobal fileencoding=utf-8
 	"setglobal bomb
 	set fileencodings=ucs-bom,utf-8,gb2312,cp936,gb18030,big5,euc-jp,euc-kr,latin1
 	if has('multi_byte') && v:version > 601 |set ambiwidth=double |endif
-	"language messages en_us.utf-8
 	if has('win32') || has('win64') |language messages zh_cn.utf-8 |endif
 	"set helplang=zh
-	"set langmenu=zh_cn.utf-8 |source $vimruntime/delmenu.vim |source $vimruntime/menu.vim
+	if has('gui_running') && stridx(&guioptions, 'm') >= 0 |set langmenu=zh_cn.utf-8 |source $vimruntime/delmenu.vim |source $vimruntime/menu.vim |endif
 	set fileformat=unix
 	auto bufenter * silent! if &modifiable && line('$') == 1 && getline('$') == '' |set fileformat=unix |update |endif
 endfunc
@@ -108,7 +108,8 @@ func s:editor()
 	set virtualedit=block
 	set autoindent smartindent
 	set noexpandtab nosmarttab tabstop=4 shiftwidth=4 softtabstop=4 " :retab or :retab!
-"# vim: set expandtab smarttab tabstop=4 shiftwidth=4 softtabstop=4 ft=python:
+"# vim: set noexpandtab nosmarttab tabstop=4 shiftwidth=4 softtabstop=4:
+"# vim: set expandtab smarttab tabstop=4 shiftwidth=4 softtabstop=4:
 
 	set laststatus=2
 
@@ -123,17 +124,15 @@ func s:plugins()
 		Bundle 'luochen1990/select-and-search'
 		Bundle 'rdark'
 		Bundle 'genindent.vim'
-		Bundle 'python.vim'
-		Bundle 'kchmck/vim-coffee-script'
-		Bundle 'scrooloose/syntastic'
 		Bundle 'ervandew/supertab'
 		Bundle 'justinmk/vim-sneak'
+		Bundle 'scrooloose/syntastic'
+		Bundle 'python.vim'
 		Bundle 'davidhalter/jedi-vim'
-		" :BundleList			- list configured bundles
-		" :BundleInstall(!)		- install(update) bundles
-		" :BundleSearch(!) foo	- search(or refresh cache first) for foo
-		" :BundleClean(!)		- confirm(or auto-approve) removal of unused bundles
-		" see :h vundle for more details or wiki for FAQ
+		Bundle 'kchmck/vim-coffee-script'
+		Bundle 'digitaltoad/vim-jade'
+		Bundle 'wavded/vim-stylus'
+		Bundle 'groenewege/vim-less'
 		" NOTE: comments after Bundle command are not allowed..
 	endfunc
 
@@ -148,7 +147,15 @@ func s:plugins()
 
 	let g:mystatusline_activated = 1
 	let g:rainbow_active = 1
+	let g:rainbow_conf = {
+	\   'separately': {
+	\       'less': 0,
+	\       'stylus': 0,
+	\   }
+	\}
 	let g:select_and_search_active = 1
+	let g:syntastic_python_checkers = ['pyflakes']
+	let g:syntastic_python3_checkers = ['pyflakes']
 	"let g:jedi#auto_vim_configuration = 0
 	"let g:jedi#goto_assignments_command = "<leader>g"
 	"let g:jedi#goto_definitions_command = "<leader>d"
@@ -162,6 +169,14 @@ func s:plugins()
 	"let NERDTreeCaseSensitiveSort=1
 	"let NERDTreeQuitOnOpen=1
 	nnoremap <silent> <f2> :NERDTree<CR>
+
+	nmap f <Plug>Sneak_s
+	nmap F <Plug>Sneak_S
+	xmap f <Plug>Sneak_s
+	xmap F <Plug>Sneak_S
+	omap f <Plug>Sneak_s
+	omap F <Plug>Sneak_S
+
 endfunc
 
 func s:global()
@@ -204,6 +219,14 @@ func s:global()
 		lines = getline(1 , 100)
 		for line in lines
 		endfor
+	endfunc
+
+	func g:ia_nth_word(args, count, ia)
+		let coma = stridx(a:args, ' ')
+		let [n, txt] = [strpart(a:args, 0, coma), strpart(a:args, coma+1)]
+		let [nxt, prv] = a:ia == 'i' ? ['W', 'B'] : ['E', 'gE']
+		let locator = n[0] != '-' ? '^'.repeat(nxt, n) : '$'.repeat(prv, -n)
+		exe 'normal! '.join(repeat([locator.a:ia.txt."\x1b"], a:count), 'j')
 	endfunc
 
 	func g:compilers()
@@ -254,15 +277,20 @@ func s:keymap()
 		command -nargs=? -range=% Lnos :let i=1|<line1>,<line2>g//s/^/\=<q-args>!=''?eval(<q-args>):printf("%d",i)/|let i+=1|nohl
 		"command -nargs=? -range=% Cid :let i=1|<line1>,<line2>g/^/s/^/\=printf(<q-args>!=''?<q-args>:"%d",i)/|let i+=1|nohl
 		"command -nargs=? -range=% Cidx :let i=1|<line1>,<line2>g//s/^/\=printf(<q-args>!=''?<q-args>:"%d",i)/|let i+=1|nohl
-		command -range=% Cdbl :<line1>,<line2>g/^\s*$/d
-		command -nargs=+ Cvds :vertical diffsplit <args>
+		command -range=% DeleteBlankLine :<line1>,<line2>g/^\s*$/d
+		command CD :exe 'cd %:p:h'
+		command -complete=file -nargs=+ Diff :exe 'cd %:p:h' |vertical diffsplit <args>
+		command -range -nargs=1 WInsert :call g:ia_nth_word('<args>', <line2>-<line1>+1, 'i')
+		command -range -nargs=1 WAppend :call g:ia_nth_word('<args>', <line2>-<line1>+1, 'a')
 		command UniqueSpaces :%s/\S\zs\s\+/ /g
+		command SyncSearch :let @/=select_and_search#plain_text_pattern(@+)
 		nnoremap <f10> :call pep8#adjust_format()<cr>
 		nnoremap <f1> :nohl<cr>
 		nnoremap a <s-a>
 		nnoremap <s-u> <c-r>
-		nnoremap / 0/\v
-		nnoremap s :%s///gc<left><left><left>
+		nnoremap / 0/\V
+		nnoremap \/ 0/\v
+		"nnoremap s :%s///g<left><left>
 		vnoremap s :s///g<left><left>
 		noremap \h :tab h<space>
 		"nnoremap <leader>m :%s/<c-v><cr>//ge<cr>'tzt'm
@@ -300,7 +328,7 @@ func s:keymap()
 		noremap 0 ^
 		noremap - $
 		vnoremap - $h
-		nnoremap f 0f
+		"nnoremap f 0f
 		noremap n nzz
 		noremap <s-n> <s-n>zz
 		"vnoremap n :<c-u>let @/='\V'.escape(g:get_selected_text(),'\')<cr><esc>nzz
@@ -330,9 +358,11 @@ func s:keymap()
 		nnoremap w :update<cr>
 		nnoremap q :q<cr>
 		nnoremap e :e<space>
-		auto bufenter * exec 'nnoremap <s-e> :e<space>'.expand('%:p:h').'/'
+		nnoremap <s-e> :exec ':e<space>'.expand('$ws')
+		"auto bufenter * exec 'nnoremap <s-e> :e<space>'.expand('%:p:h').'/'
 		nnoremap t :tabe<space>
-		auto bufenter * exec 'nnoremap <s-t> :tabe<space>'.expand('%:p:h').'/'
+		nnoremap <s-t> :exec ':tabe<space>'.expand('$ws')
+		"auto bufenter * exec 'nnoremap <s-t> :tabe<space>'.expand('%:p:h').'/'
 		"nnoremap tq :q<cr>
 		"nnoremap tc g<s-t>:q<cr> "nnoremap tj :tabe<space>$ws<cr> "nnoremap tl :tabe<space>%:p:h\<cr>
 		nnoremap <c-tab> gt
@@ -367,4 +397,5 @@ func s:keymap()
 endfunc
 
 call s:init()
+
 " vim: set ff=unix ft=vim ts=4:
