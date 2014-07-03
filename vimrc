@@ -153,7 +153,7 @@ func s:plugins()
 	\       'stylus': 0,
 	\   }
 	\}
-	let g:select_and_search_active = 1
+	let g:select_and_search_active = 2
 	let g:syntastic_python_checkers = ['pyflakes']
 	let g:syntastic_python3_checkers = ['pyflakes']
 	"let g:jedi#auto_vim_configuration = 0
