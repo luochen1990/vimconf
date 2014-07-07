@@ -4,12 +4,14 @@ if has('win32')
 	if line[:1] == '#!'
 		let python_cmd = line[strridx(line, ' ')+1:]
 	else
-		let python_cmd = 'python2'
+		let python_cmd = 'python3'
 	endif
 	"if system('echo %python%') != system('echo %'.python_cmd.'%')
-	"if expand('$python') != expand('$'.python_cmd)
 	"	silent! exe '!setx python \%'.python_cmd.'\%'
-	"	exe '!set path='.Repr(expand(expand('$path')))
+	"	echo 'Using Python From: '.expand('$'.python_cmd)
+	"endif
+	"if expand('$python') != expand('$'.python_cmd)
+	"	call system('setx python %'.python_cmd.'%'.' && setx path '.expand(expand('$path')))
 	"	echo 'Using Python From: '.expand('$'.python_cmd)
 	"endif
 endif
