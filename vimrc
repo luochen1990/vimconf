@@ -149,12 +149,12 @@ func s:plugins()
 	let g:mystatusline_activated = 1
 	let g:rainbow_active = 1
 	let g:rainbow_conf = {
-	\	'separately': {
-	\		'less': 0,
-	\		'stylus': 0,
-	\	}
+	\   'separately': {
+	\       'less': 0,
+	\       'stylus': 0,
+	\   }
 	\}
-	let g:select_and_search_active = 1
+	let g:select_and_search_active = 2
 	let g:syntastic_python_checkers = ['pyflakes']
 	let g:syntastic_python3_checkers = ['pyflakes']
 	"let g:jedi#auto_vim_configuration = 0
@@ -222,6 +222,14 @@ func s:global()
 		endfor
 	endfunc
 
+	func g:ia_nth_word(args, count, ia)
+		let coma = stridx(a:args, ' ')
+		let [n, txt] = [strpart(a:args, 0, coma), strpart(a:args, coma+1)]
+		let [nxt, prv] = a:ia == 'i' ? ['W', 'B'] : ['E', 'gE']
+		let locator = n[0] != '-' ? '^'.repeat(nxt, n) : '$'.repeat(prv, -n)
+		exe 'normal! '.join(repeat([locator.a:ia.txt."\x1b"], a:count), 'j')
+	endfunc
+
 	func g:compilers()
 		update
 		cd %:p:h
@@ -273,6 +281,8 @@ func s:keymap()
 		command -range=% DeleteBlankLine :<line1>,<line2>g/^\s*$/d
 		command CD :exe 'cd %:p:h'
 		command -complete=file -nargs=+ Diff :exe 'cd %:p:h' |vertical diffsplit <args>
+		command -range -nargs=1 WInsert :call g:ia_nth_word('<args>', <line2>-<line1>+1, 'i')
+		command -range -nargs=1 WAppend :call g:ia_nth_word('<args>', <line2>-<line1>+1, 'a')
 		command UniqueSpaces :%s/\S\zs\s\+/ /g
 		command SyncSearch :let @/=select_and_search#plain_text_pattern(@+)
 		nnoremap <f10> :call pep8#adjust_format()<cr>
