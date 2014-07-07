@@ -274,6 +274,7 @@ func s:keymap()
 	endfunc
 
 	func s:my_shotcut()
+		command W w !sudo tee % > /dev/null
 		command -nargs=? -range=% Lno :let i=1|<line1>,<line2>g/^/s/^/\=<q-args>!=''?eval(<q-args>):printf("%d",i)/|let i+=1|nohl
 		command -nargs=? -range=% Lnos :let i=1|<line1>,<line2>g//s/^/\=<q-args>!=''?eval(<q-args>):printf("%d",i)/|let i+=1|nohl
 		"command -nargs=? -range=% Cid :let i=1|<line1>,<line2>g/^/s/^/\=printf(<q-args>!=''?<q-args>:"%d",i)/|let i+=1|nohl
