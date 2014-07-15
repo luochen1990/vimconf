@@ -26,8 +26,7 @@ func s:general()
 	if exists('$vimconf')
 		let $vimrc = $vimconf.'/vimrc'
 		let $vimdir = $vimconf.'/vimdir'
-		call s:expand_rtp(split(glob($vimconf.'/bundle/*'), '\n'))
-		call s:expand_rtp($vimdir)
+		call s:expand_rtp([$vimdir] + split(glob($vimconf.'/bundle/*'), '\n'))
 	else
 		let $vimrc = has('win32')? $HOME.'/_vimrc' : $HOME.'/.vimrc'
 		let $vimdir = has('win32')? $HOME.'/vimfiles' : $HOME.'/.vim'
@@ -202,11 +201,7 @@ endfunc
 
 func s:helpers()
 	func s:expand_rtp(path)
-		if type(a:path) == type('')
-			let &rtp = a:path.','.&rtp.','.a:path.'/after'
-		else
-			let &rtp = join(a:path, ',').','.&rtp.','.join(reverse(map(copy(a:path), 'v:val."/after"')), ',')
-		endif
+		let &rtp = join(a:path, ',').','.&rtp.','.join(reverse(map(copy(a:path), 'v:val."/after"')), ',')
 	endfunc
 
 	func Repr(s)
@@ -430,4 +425,4 @@ endfunc
 
 call s:init()
 
-" vim: set ff=unix ft=vim ts=4:
+" vim: set fileformat=unix filetype=vim noexpandtab nosmarttab tabstop=4 shiftwidth=4 softtabstop=4:
