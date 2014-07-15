@@ -1,7 +1,13 @@
-About it
-========
+About this repo
+---------------
 
-This is the vim conf I used, I created it just for myself. but there may be something you can learn from it, just read it and create your own, don't copy it, copying will help nothing.
+This is the VIM conf I'm using. I don't think that there could be a "perfect" and "general" VIM configuration which can make everybody happy.
+
+If there was, then you should ask why VIM is designed configurable, what's the differents between VIM and the other editors which can be used directly without VIM's "complex" configuration, and the most important question: why you are using VIM?
+
+In my opnion, people loves VIM(Emacs) because it is flexible and configurable. If we hate some behavoirs of VIM, we can change it ourself instead of suffering and complaining, not because VIM increases our typing speed.
+
+I created this repo just for myself, but there may be something you can reference. Just read it and create your own, do not copy it, copying helps nothing.
 
 Properties
 ----------
@@ -43,7 +49,7 @@ echo $workpath
 git --work-tree=$workpath clone --recursive $1 $gitpath && echo "gitdir: $gitpath" > $workpath/.git
 ```
 
-then run this command in CLI:
+then run some command like this in CLI:
 ```shell
 sh git-clone-ext.sh git@github.com:luochen1990/vimconf.git ../github/vimconf.git ./config/vimconf
 ```
