@@ -1,3 +1,12 @@
-[submodule "vimdir/bundle/vundle"]
-	path = vimdir/bundle/vundle
-	url = git@github.com:gmarik/vundle.git
+[submodule "bundle/rainbow"]
+	path = bundle/rainbow
+	url = git@github.com:luochen1990/rainbow.git
+[submodule "bundle/select-and-search"]
+	path = bundle/select-and-search
+	url = git@github.com:luochen1990/select-and-search
+[submodule "bundle/supertab"]
+	path = bundle/supertab
+	url = git@github.com:ervandew/supertab
+[submodule "bundle/vim-coffee-script"]
+	path = bundle/vim-coffee-script
+	url = git@github.com:kchmck/vim-coffee-script

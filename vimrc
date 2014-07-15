@@ -1,33 +1,38 @@
 func s:init()
+	call s:helpers()
 	call s:encoding()
 	call s:general()
 	call s:font()
 	call s:editor()
 	call s:plugins()
-	call s:global()
 	call s:keymap()
 endfunc
 
 func s:general()
-	if exists('$vimrc') && match($vimrc , '\<Dropbox\>') >= 0
-		let $Dropbox = strpart($vimrc, 0, match($vimrc,'\<Dropbox\>')+7)
+	if !exists('$Dropbox') && isdirectory('~/Dropbox') |let $Dropbox = '~/Dropbox' |endif
+	if !exists('$Dropbox') && isdirectory('D:/Dropbox') |let $Dropbox = 'D:/Dropbox' |endif
+	if exists('$Dropbox')
 		let $ws = '$Dropbox/Workspace/vim'
 	else
 		let $ws = exists('$DESKTOP')? $DESKTOP : $HOME
-		if exists('*mkdir')
-			if !isdirectory($ws.'/luows')
-				call mkdir($ws.'/luows', 'p')
-			endif
-			let $ws = $ws.'/luows'
+		if isdirectory($ws.'/vimws')
+			let $ws = $ws.'/vimws'
+		elseif exists('*mkdir')
+			call mkdir($ws.'/vimws', 'p')
+			let $ws = $ws.'/vimws'
 		endif
 	endif
-	if exists('$vimrc') && isdirectory($vimrc.'/../vimdir')
-		let $vimdir = $vimrc.'/../vimdir'
-		let &rtp = $vimdir.','.&rtp.','.$vimdir.'/after'
+
+	if exists('$vimconf')
+		let $vimrc = $vimconf.'/vimrc'
+		let $vimdir = $vimconf.'/vimdir'
+		call s:expand_rtp(split(glob($vimconf.'/bundle/*'), '\n'))
+		call s:expand_rtp($vimdir)
 	else
+		let $vimrc = has('win32')? $HOME.'/_vimrc' : $HOME.'/.vimrc'
 		let $vimdir = has('win32')? $HOME.'/vimfiles' : $HOME.'/.vim'
 	endif
-	cd $ws
+	auto vimenter * cd $ws
 	auto bufenter * silent! lcd %:p:h "LIKE AUTOCHDIR
 
 	set nocompatible
@@ -44,12 +49,13 @@ func s:general()
 
 	if has('gui_running')
 		set guioptions=r "egmrltT
+		if stridx(&guioptions, 'm') >= 0 |set langmenu=zh_cn.utf-8 |source $vimruntime/delmenu.vim |source $vimruntime/menu.vim |endif
 		"set guitablabel=%N\ %f
 		if has('mouse')
 			set mouse=a mousefocus
 		endif
 		if has('win32') || has('win64')
-			auto guienter * silent! call libcallnr("vimtweak.dll", 'SetAlpha', 220)
+			"auto guienter * silent! call libcallnr("vimtweak.dll", 'SetAlpha', 220)
 			set winaltkeys=no
 			auto guienter * simalt ~x "MAXIMIZE WINDOW
 			noremap <a-space> :simalt ~<cr>
@@ -73,7 +79,6 @@ func s:encoding()
 	if has('multi_byte') && v:version > 601 |set ambiwidth=double |endif
 	if has('win32') || has('win64') |language messages zh_cn.utf-8 |endif
 	"set helplang=zh
-	if has('gui_running') && stridx(&guioptions, 'm') >= 0 |set langmenu=zh_cn.utf-8 |source $vimruntime/delmenu.vim |source $vimruntime/menu.vim |endif
 	set fileformat=unix
 	auto bufenter * silent! if &modifiable && line('$') == 1 && getline('$') == '' |set fileformat=unix |update |endif
 endfunc
@@ -120,31 +125,31 @@ func s:editor()
 endfunc
 
 func s:plugins()
-	func s:vundle_conf()
-		Bundle 'luochen1990/rainbow'
-		Bundle 'luochen1990/select-and-search'
-		Bundle 'rdark'
-		Bundle 'genindent.vim'
-		Bundle 'ervandew/supertab'
-		Bundle 'justinmk/vim-sneak'
-		Bundle 'scrooloose/syntastic'
-		Bundle 'python.vim'
-		Bundle 'davidhalter/jedi-vim'
-		Bundle 'kchmck/vim-coffee-script'
-		Bundle 'digitaltoad/vim-jade'
-		Bundle 'wavded/vim-stylus'
-		Bundle 'groenewege/vim-less'
-		" NOTE: comments after Bundle command are not allowed..
-	endfunc
+	"func s:vundle_conf()
+	"	Bundle 'luochen1990/rainbow'
+	"	Bundle 'luochen1990/select-and-search'
+	"	Bundle 'rdark'
+	"	Bundle 'genindent.vim'
+	"	Bundle 'ervandew/supertab'
+	"	Bundle 'justinmk/vim-sneak'
+	"	Bundle 'scrooloose/syntastic'
+	"	Bundle 'python.vim'
+	"	Bundle 'davidhalter/jedi-vim'
+	"	Bundle 'kchmck/vim-coffee-script'
+	"	Bundle 'digitaltoad/vim-jade'
+	"	Bundle 'wavded/vim-stylus'
+	"	Bundle 'groenewege/vim-less'
+	"	" NOTE: comments after Bundle command are not allowed..
+	"endfunc
 
-	if isdirectory($vimdir.'/bundle/vundle')
-		filetype off
-		set rtp+=$vimdir/bundle/vundle/
-		call vundle#rc($vimdir.'/bundle')
-		Bundle 'gmarik/vundle'
-		call s:vundle_conf()
-		filetype plugin indent on
-	endif
+	"if isdirectory($vimconf.'/bundle/vundle')
+	"	filetype off
+	"	set rtp+=$vimconf/bundle/vundle/
+	"	call vundle#rc($vimconf.'/bundle')
+	"	Bundle 'gmarik/vundle'
+	"	call s:vundle_conf()
+	"	filetype plugin indent on
+	"endif
 
 	let g:mystatusline_activated = 1
 	let g:rainbow_active = 1
@@ -160,7 +165,7 @@ func s:plugins()
 	\			'ctermfgs': ['darkgray', 'darkblue', 'darkmagenta', 'darkcyan', 'darkred', 'darkgreen'],
 	\		},
 	\		'vim': {
-	\			'parentheses': [['fu\w* \s*.*)','endfu\w*'], ['for','endfor'], ['while', 'endwhile'], ['if','_elseif\|else_','endif'], ['(',')'], ['\[','\]'], ['{','}']],
+	\			'parentheses': [['fu\w* \s*.*)','endfu\w*'], ['for','endfor'], ['while', 'endwhile'], ['if','_elseif\|else_','|\?endif'], ['(',')'], ['\[','\]'], ['{','}']],
 	\		},
 	\		'tex': {
 	\			'parentheses': [['(',')'], ['\[','\]'], ['\\begin{.*}','\\end{.*}']],
@@ -195,7 +200,15 @@ func s:plugins()
 
 endfunc
 
-func s:global()
+func s:helpers()
+	func s:expand_rtp(path)
+		if type(a:path) == type('')
+			let &rtp = a:path.','.&rtp.','.a:path.'/after'
+		else
+			let &rtp = join(a:path, ',').','.&rtp.','.join(reverse(map(copy(a:path), 'v:val."/after"')), ',')
+		endif
+	endfunc
+
 	func Repr(s)
 		let known = {13: '\r', 10: '\n', 9: '\t', 92: '\\'}
 		let r = ''
@@ -304,8 +317,9 @@ func s:keymap()
 		nnoremap <f10> :call pep8#adjust_format()<cr>
 		nnoremap <f1> :nohl<cr>
 		nnoremap a <s-a>
+		vnoremap <bs> "_x
 		nnoremap <s-u> <c-r>
-		nnoremap / 0/\V
+		nnoremap / 0/
 		nnoremap \/ 0/\v
 		"nnoremap s :%s///g<left><left>
 		vnoremap s :s///g<left><left>
@@ -351,6 +365,7 @@ func s:keymap()
 		"vnoremap n :<c-u>let @/='\V'.escape(g:get_selected_text(),'\')<cr><esc>nzz
 		"vnoremap <s-n> :<c-u>let @/=g:get_selected_text()<cr><esc><s-n>zz
 		noremap * *zz
+		noremap # #zz
 		noremap <c-o> <c-o>zz
 		noremap <c-i> <c-i>zz
 		noremap <s-j> <c-d><s-m>
@@ -360,15 +375,16 @@ func s:keymap()
 	endfunc
 
 	func s:clipboard_synchronizing()
-		"set clipboard+=unnamed
-		nnoremap y "+y
-		nnoremap d "+d
-		nnoremap p "+p
-		nnoremap <s-p> "+<s-p>
-		vnoremap y "+y
-		vnoremap d "+d
-		vnoremap p "+p
-		inoremap <a-p> <esc>"+p
+		set clipboard+=unnamed
+		noremap x "_x
+		"nnoremap y "+y
+		"nnoremap d "+d
+		"nnoremap p "+p
+		"nnoremap <s-p> "+<s-p>
+		"vnoremap y "+y
+		"vnoremap d "+d
+		"vnoremap p "+p
+		"inoremap <a-p> <esc>"+p
 	endfunc
 
 	func s:tab_browsing()
@@ -395,7 +411,6 @@ func s:keymap()
 		nnoremap <cr> <s-i><cr><esc>
 		nnoremap <s-cr> i<cr><esc>
 		nnoremap <bs> i<bs><esc><right>
-		vnoremap <bs> d
 		"inoremap <s-bs> <esc><right>dbi
 	endfunc
 
