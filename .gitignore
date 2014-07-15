@@ -1,2 +1,2 @@
-vimdir/bundle/
-!vimdir/bundle/vundle/
+bundle/
+!bundle/vundle/
