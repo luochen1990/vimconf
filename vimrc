@@ -163,12 +163,6 @@ func s:plugins()
 	\			'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick', 'darkorchid3'],
 	\			'ctermfgs': ['darkgray', 'darkblue', 'darkmagenta', 'darkcyan', 'darkred', 'darkgreen'],
 	\		},
-	\		'vim': {
-	\			'parentheses': [['fu\w* \s*.*)','endfu\w*'], ['for','endfor'], ['while', 'endwhile'], ['if','_elseif\|else_','|\?endif'], ['(',')'], ['\[','\]'], ['{','}']],
-	\		},
-	\		'tex': {
-	\			'parentheses': [['(',')'], ['\[','\]'], ['\\begin{.*}','\\end{.*}']],
-	\		},
 	\		'css': 0,
 	\		'stylus': 0,
 	\	}
@@ -280,8 +274,8 @@ func s:helpers()
 				endif
 			endfor
 		endif
-		let [tmp, @"] = [@", a:lp.s.a:rp] |normal! p
-		let @" = tmp
+		let [tmp, @x] = [@x, a:lp.s.a:rp] |normal! "xp
+		let @x = tmp
 	endfunc
 endfunc
 
