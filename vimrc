@@ -86,14 +86,20 @@ func s:font()
 """ `1234567890-= qwertyuiop[]\ asdfghjkl;' zxcvbnm,./
 """ ~!@#$%^&*()_+ QWERTYUIOP{}| ASDFGHJKL:" ZXCVBNM<>?
 """ Courier New ; Times New Roman
-	if has('gui_running') "&& (has('win32') || has('win64'))
-		set guifont=courier_new:h16
-		"auto bufenter * set guifont=courier_new:h16		"一般字体
-		"auto bufenter *.txt if &ft=='help'|set gfn=courier_new:h14|endif
-		"set guifont=bitstream_vera_sans_mono:h14:cansi	" 英文
-		"set guifont=arial_monospaced_for_sap:h14:cansi
-		"set guifontwide=幼圆:h14.5:cgb2312				" 中文
-		"set guifontwide=方正准圆简体:h14.5:cgb2312
+	if has("gui_running")
+	    if has("gui_gtk2")
+			set guifont=Courier\ 10\ Pitch\ 16
+	    elseif has("x11")
+			set guifont=*-lucidatypewriter-medium-r-normal-*-*-180-*-*-m-*-*
+	    elseif has("gui_win32")
+			set guifont=courier_new:h16
+			"auto bufenter * set guifont=courier_new:h16		"一般字体
+			"auto bufenter *.txt if &ft=='help'|set gfn=courier_new:h14|endif
+			"set guifont=bitstream_vera_sans_mono:h14:cansi	" 英文
+			"set guifont=arial_monospaced_for_sap:h14:cansi
+			"set guifontwide=幼圆:h14.5:cgb2312				" 中文
+			"set guifontwide=方正准圆简体:h14.5:cgb2312
+	    endif
 	endif
 endfunc
 
@@ -154,14 +160,13 @@ func s:plugins()
 	let g:rainbow_active = 1
 	let g:rainbow_conf = {
 	\	'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick'],
-	\	'ctermfgs': ['darkgray', 'darkblue', 'darkmagenta', 'darkcyan'],
+	\	'ctermfgs': ['lightblue', 'lightyellow', 'lightcyan', 'lightmagenta'],
 	\	'operators': '_,_',
 	\	'parentheses': [['(',')'], ['\[','\]'], ['{','}']],
 	\	'separately': {
 	\		'*': {},
 	\		'lisp': {
 	\			'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick', 'darkorchid3'],
-	\			'ctermfgs': ['darkgray', 'darkblue', 'darkmagenta', 'darkcyan', 'darkred', 'darkgreen'],
 	\		},
 	\		'vim': {
 	\			'parentheses': [['fu\w* \s*.*)','endfu\w*'], ['for','endfor'], ['while', 'endwhile'], ['if','_elseif\|else_','|\?endif'], ['(',')'], ['\[','\]'], ['{','}']],
