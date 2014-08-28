@@ -53,7 +53,7 @@ func s:general()
 		if has('mouse')
 			set mouse=a mousefocus
 		endif
-		if has('win32') || has('win64')
+		if has('gui_running') "has('win32') || has('win64')
 			"auto guienter * silent! call libcallnr("vimtweak.dll", 'SetAlpha', 220)
 			set winaltkeys=no
 			auto guienter * simalt ~x "MAXIMIZE WINDOW
@@ -346,7 +346,9 @@ func s:keymap()
 
 	func s:line_browsing()
 		"au insertleave,cursormoved * normal zz
-		auto guienter * nnoremap <esc> :nohl<cr>zz
+		nnoremap <esc> :noh<cr>zz
+		"NOTE: this will do some strange things(enter insert mode and ..) on RHEL when vim enter, so you can use the following one to avoid that
+		"auto guienter * nnoremap <esc> :noh<cr>zz
 		noremap j gjzz
 		noremap k gkzz
 		noremap ^ 0
