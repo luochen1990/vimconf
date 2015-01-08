@@ -1,21 +1,3 @@
-[submodule "bundle/rainbow"]
-	path = bundle/rainbow
-	url = git@github.com:luochen1990/rainbow.git
-[submodule "bundle/select-and-search"]
-	path = bundle/select-and-search
-	url = git@github.com:luochen1990/select-and-search
-[submodule "bundle/supertab"]
-	path = bundle/supertab
-	url = git@github.com:ervandew/supertab
-[submodule "bundle/vim-coffee-script"]
-	path = bundle/vim-coffee-script
-	url = git@github.com:kchmck/vim-coffee-script
-[submodule "bundle/vim-jade"]
-	path = bundle/vim-jade
-	url = git@github.com:digitaltoad/vim-jade.git
-[submodule "bundle/vim-stylus"]
-	path = bundle/vim-stylus
-	url = git@github.com:wavded/vim-stylus.git
-[submodule "bundle/syntastic"]
-	path = bundle/syntastic
-	url = git@github.com:scrooloose/syntastic.git
+[submodule "bundle/vundle"]
+	path = bundle/vundle
+	url = git@github.com:gmarik/vundle.git

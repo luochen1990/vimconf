@@ -34,6 +34,8 @@ You can try it with the following steps:
 	source $vimconf/vimrc
 ```
 - reboot your vim.
+- run `:BundleInstall` in Vim to install other plugins.
+- reboot your vim.
 
 Dropbox Friendly
 ----------------

@@ -26,11 +26,12 @@ func s:general()
 	if exists('$vimconf')
 		let $vimrc = $vimconf.'/vimrc'
 		let $vimdir = $vimconf.'/vimdir'
-		call s:expand_rtp([$vimdir] + split(glob($vimconf.'/bundle/*'), '\n'))
+		call s:expand_rtp([$vimdir]) " + split(glob($vimconf.'/bundle/*'), '\n'))
 	else
 		let $vimrc = has('win32')? $HOME.'/_vimrc' : $HOME.'/.vimrc'
 		let $vimdir = has('win32')? $HOME.'/vimfiles' : $HOME.'/.vim'
 	endif
+	cd $ws
 	auto vimenter * cd $ws
 	auto bufenter * silent! lcd %:p:h "LIKE AUTOCHDIR
 
@@ -117,6 +118,7 @@ func s:editor()
 	set nowrapscan incsearch hlsearch
 
 	set virtualedit=block
+	set foldmethod=syntax foldlevel=10
 	set autoindent smartindent
 	set noexpandtab nosmarttab tabstop=4 shiftwidth=4 softtabstop=4 " :retab or :retab!
 "# vim: set noexpandtab nosmarttab tabstop=4 shiftwidth=4 softtabstop=4:
@@ -130,51 +132,51 @@ func s:editor()
 endfunc
 
 func s:plugins()
-	"func s:vundle_conf()
-	"	Bundle 'luochen1990/rainbow'
-	"	Bundle 'luochen1990/select-and-search'
+	func s:vundle_conf()
+		Bundle 'luochen1990/rainbow'
+		Bundle 'luochen1990/select-and-search'
 	"	Bundle 'rdark'
 	"	Bundle 'genindent.vim'
-	"	Bundle 'ervandew/supertab'
+		Bundle 'ervandew/supertab'
 	"	Bundle 'justinmk/vim-sneak'
-	"	Bundle 'scrooloose/syntastic'
+		Bundle 'scrooloose/syntastic'
 	"	Bundle 'python.vim'
 	"	Bundle 'davidhalter/jedi-vim'
-	"	Bundle 'kchmck/vim-coffee-script'
-	"	Bundle 'digitaltoad/vim-jade'
-	"	Bundle 'wavded/vim-stylus'
+		Bundle 'kchmck/vim-coffee-script'
+		Bundle 'digitaltoad/vim-jade'
+		Bundle 'wavded/vim-stylus'
 	"	Bundle 'groenewege/vim-less'
-	"	" NOTE: comments after Bundle command are not allowed..
-	"endfunc
-
-	"if isdirectory($vimconf.'/bundle/vundle')
-	"	filetype off
-	"	set rtp+=$vimconf/bundle/vundle/
-	"	call vundle#rc($vimconf.'/bundle')
-	"	Bundle 'gmarik/vundle'
-	"	call s:vundle_conf()
-	"	filetype plugin indent on
-	"endif
+		Bundle 'wlangstroth/vim-racket'
+		" NOTE: comments after Bundle command are not allowed..
+	endfunc
+	if isdirectory($vimconf.'/bundle/vundle')
+		filetype off
+		set rtp+=$vimconf/bundle/vundle/
+		call vundle#rc($vimconf.'/bundle')
+		Bundle 'gmarik/vundle'
+		call s:vundle_conf()
+		filetype plugin indent on
+	endif
 
 	let g:mystatusline_activated = 1
 	let g:rainbow_active = 1
 	let g:rainbow_conf = {
-	\	'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick'],
-	\	'ctermfgs': ['lightblue', 'lightyellow', 'lightcyan', 'lightmagenta'],
-	\	'operators': '_,_',
-	\	'parentheses': [['(',')'], ['\[','\]'], ['{','}']],
 	\	'separately': {
-	\		'*': {},
 	\		'lisp': {
 	\			'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick', 'darkorchid3'],
 	\		},
-	\		'css': 0,
 	\		'stylus': 0,
 	\	}
 	\}
 	let g:select_and_search_active = 2
 	let g:syntastic_python_checkers = ['pyflakes']
 	let g:syntastic_python3_checkers = ['pyflakes']
+	let g:ctrlp_map = 'e'
+	nnoremap <s-e> :CtrlPMRUFiles<cr>
+	let g:ctrlp_clear_cache_on_exit = 0
+	let g:ctrlp_mruf_case_sensitive = 0
+	let g:SuperTabNoCompleteAfter = ['\s', ';', '|']
+	let g:SuperTabCrMapping = 0
 	"let g:jedi#auto_vim_configuration = 0
 	"let g:jedi#goto_assignments_command = "<leader>g"
 	"let g:jedi#goto_definitions_command = "<leader>d"
@@ -187,14 +189,14 @@ func s:plugins()
 	"let NERDChristmasTree=1
 	"let NERDTreeCaseSensitiveSort=1
 	"let NERDTreeQuitOnOpen=1
-	nnoremap <silent> <f2> :NERDTree<CR>
+	"nnoremap <silent> <f2> :NERDTree<CR>
 
-	nmap f <Plug>Sneak_s
-	nmap F <Plug>Sneak_S
-	xmap f <Plug>Sneak_s
-	xmap F <Plug>Sneak_S
-	omap f <Plug>Sneak_s
-	omap F <Plug>Sneak_S
+	"nmap f <Plug>Sneak_s
+	"nmap F <Plug>Sneak_S
+	"xmap f <Plug>Sneak_s
+	"xmap F <Plug>Sneak_S
+	"omap f <Plug>Sneak_s
+	"omap F <Plug>Sneak_S
 
 endfunc
 
@@ -296,9 +298,10 @@ func s:keymap()
 	endfunc
 
 	func s:my_shotcut()
+		"binary editing: :%!xxd , turn back: :%!xxd -r
 		command W w !sudo tee % > /dev/null
 		command -nargs=? -range=% Lno :let i=1|<line1>,<line2>g/^/s/^/\=<q-args>!=''?eval(<q-args>):printf("%d",i)/|let i+=1|nohl
-		command -nargs=? -range=% Lnos :let i=1|<line1>,<line2>g//s/^/\=<q-args>!=''?eval(<q-args>):printf("%d",i)/|let i+=1|nohl
+		command -nargs=? -range=% Lnos :let i=1|<line1>,<line2>g//s//\=<q-args>!=''?eval(<q-args>):printf("%d",i)/|let i+=1|nohl
 		"command -nargs=? -range=% Cid :let i=1|<line1>,<line2>g/^/s/^/\=printf(<q-args>!=''?<q-args>:"%d",i)/|let i+=1|nohl
 		"command -nargs=? -range=% Cidx :let i=1|<line1>,<line2>g//s/^/\=printf(<q-args>!=''?<q-args>:"%d",i)/|let i+=1|nohl
 		command -range=% DeleteBlankLine :<line1>,<line2>g/^\s*$/d
@@ -387,10 +390,10 @@ func s:keymap()
 		nnoremap w :update<cr>
 		nnoremap q :q<cr>
 		nnoremap e :e<space>
-		nnoremap <s-e> :exec ':e<space>'.expand('$ws')
+		"nnoremap <s-e> :exec ':e<space>'.expand('$ws')
 		"auto bufenter * exec 'nnoremap <s-e> :e<space>'.expand('%:p:h').'/'
 		nnoremap t :tabe<space>
-		nnoremap <s-t> :exec ':tabe<space>'.expand('$ws')
+		"nnoremap <s-t> :exec ':tabe<space>'.expand('$ws')
 		"auto bufenter * exec 'nnoremap <s-t> :tabe<space>'.expand('%:p:h').'/'
 		"nnoremap tq :q<cr>
 		"nnoremap tc g<s-t>:q<cr> "nnoremap tj :tabe<space>$ws<cr> "nnoremap tl :tabe<space>%:p:h\<cr>
