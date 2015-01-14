@@ -74,8 +74,12 @@ func g:compileRun()
 		exe '! sbcl --disable-debugger --load %:p'
 	endif
 
+	if &filetype == 'racket'
+		exe '! racket -t %:p'
+	endif
+
 	if &filetype == 'scheme'
-		exe '! racket -r %:p'
+		exe '! racket -t %:p'
 	endif
 
 	if &filetype == 'html'
