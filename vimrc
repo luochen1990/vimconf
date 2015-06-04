@@ -9,8 +9,10 @@ func s:init()
 endfunc
 
 func s:general()
-	if !exists('$Dropbox') && isdirectory('~/Dropbox') |let $Dropbox = '~/Dropbox' |endif
-	if !exists('$Dropbox') && isdirectory('D:/Dropbox') |let $Dropbox = 'D:/Dropbox' |endif
+	let dropbox_candidates = [expand('~/Dropbox'), 'D:/Dropbox']
+	for dir in dropbox_candidates
+		if !exists('$Dropbox') && isdirectory(dir) |let $Dropbox = dir |endif
+	endfor
 	if exists('$Dropbox')
 		let $ws = '$Dropbox/Workspace/vim'
 	else
@@ -37,10 +39,10 @@ func s:general()
 
 	set nocompatible
 	set autoread "lazyredraw
-	set visualbell "t_vb=
+	set visualbell t_vb=
 	set history=1000
 	set nowritebackup nobackup noswapfile
-	set ignorecase smartcase
+	"set ignorecase smartcase
 	"set tags=tags;
 	set keymodel=startsel,stopsel selectmode=
 	set showtabline=1
@@ -132,7 +134,7 @@ func s:editor()
 endfunc
 
 func s:plugins()
-	func s:vundle_conf()
+	func s:vundle_conf() "NOTE: comments after Bundle command are not allowed..
 		Bundle 'luochen1990/rainbow'
 		Bundle 'luochen1990/select-and-search'
 	"	Bundle 'rdark'
@@ -147,7 +149,7 @@ func s:plugins()
 		Bundle 'wavded/vim-stylus'
 	"	Bundle 'groenewege/vim-less'
 		Bundle 'wlangstroth/vim-racket'
-		" NOTE: comments after Bundle command are not allowed..
+		Bundle 'lambdatoast/elm.vim'
 	endfunc
 	if isdirectory($vimconf.'/bundle/vundle')
 		filetype off
@@ -162,9 +164,6 @@ func s:plugins()
 	let g:rainbow_active = 1
 	let g:rainbow_conf = {
 	\	'separately': {
-	\		'lisp': {
-	\			'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick', 'darkorchid3'],
-	\		},
 	\		'stylus': 0,
 	\	}
 	\}
@@ -238,13 +237,62 @@ func s:helpers()
 
 	command! -nargs=0 -bar PyV call s:py_ver()
 	command! -nargs=0 -bar Py3V call s:py3_ver()
+	command Syname echo synIDattr(synID(line("."), col("."), 1), "name")
 
-	func g:indent_detect()
-		let tab_used = false
-		lines = getline(1 , 100)
-		for line in lines
-		endfor
+	func g:search_nearby(pat)
+		return search(a:pat, 'Wnc', 0, 20) > 0 || search(a:pat, 'Wnb', 0, 20) > 0
 	endfunc
+
+	func g:indent_detect(autoadjust)
+		let leadtab = g:search_nearby('^\t')
+		let leadspace = g:search_nearby('^ ')
+		if leadtab + leadspace < 2 && g:search_nearby('^\(\t\+ \| \+\t\)') == 0
+			if leadtab
+				if a:autoadjust
+					setl noexpandtab nosmarttab tabstop=4 shiftwidth=4 softtabstop=4
+				endif
+				return 'tab'
+			elseif leadspace
+				let spacenum = 0
+				if g:search_nearby('^ [^\t ]')
+					let spacenum = 1
+				elseif g:search_nearby('^  [^\t ]')
+					let spacenum = 2
+				elseif g:search_nearby('^   [^\t ]')
+					let spacenum = 3
+				elseif g:search_nearby('^    [^\t ]')
+					let spacenum = 4
+				endif
+				if a:autoadjust && spacenum
+					let n = spacenum
+					exec 'setl expandtab smarttab tabstop='.n.' shiftwidth='.n.' softtabstop='.n
+				endif
+				return 'space * '.(spacenum ? spacenum : '>4')
+			else
+				return 'default'
+			endif
+		else
+			return 'mixed'
+		endif
+	endfunc
+
+	func g:indent_detect_hook()
+		let rst = g:indent_detect(1)
+		if &readonly == 0
+			if rst == 'mixed'
+				echohl ErrorMsg | echo 'mixed indent' | echohl None 
+			elseif rst[0] == 's' "space
+				if rst[8] == '>' "too many
+					echohl WarningMsg | echo 'too many leading spaces here.' | echohl None 
+				else
+					echo 'indent: '.rst
+				endif
+			endif
+		endif
+	endfunc
+
+	auto bufenter * call g:indent_detect_hook()
+
 
 	func g:ia_nth_word(args, count, ia)
 		let coma = stridx(a:args, ' ')
@@ -311,6 +359,7 @@ func s:keymap()
 		command -range -nargs=1 WAppend :call g:ia_nth_word('<args>', <line2>-<line1>+1, 'a')
 		command UniqueSpaces :%s/\S\zs\s\+/ /g
 		command SyncSearch :let @/=select_and_search#plain_text_pattern(@+)
+
 		nnoremap <f10> :call pep8#adjust_format()<cr>
 		nnoremap <f1> :nohl<cr>
 		nnoremap a <s-a>
@@ -348,7 +397,7 @@ func s:keymap()
 	endfunc
 
 	func s:line_browsing()
-		"au insertleave,cursormoved * normal zz
+		"au insertleave,cursormoved * normal! zz
 		nnoremap <esc> :noh<cr>zz
 		"NOTE: this will do some strange things(enter insert mode and ..) on RHEL when vim enter, so you can use the following one to avoid that
 		"auto guienter * nnoremap <esc> :noh<cr>zz

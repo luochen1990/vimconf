@@ -1,17 +1,16 @@
 func g:compileRun()
-	if &filetype == 'cpp11'
-		let out = '%:p:h\out'
-		let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
-		execute '!start cmd /c g++ %:p -Wall -Wno-unused -O2 -lboost_coroutine -std=c++11 -o '.out.' & '.run.' & pause'
-		"g++ Test.cpp -o Test -Wall -O2 -lboost_coroutine -std=c++11
-	endif
-	
 	if &filetype == 'cpp'
 		if match(getline(1) , '//vc') != -1
 			let vcpath = 'f:\desktop\vc2010'
 			"let vcpath = expand('$vc')
 			let vcload = 'd:\appfordevelop\vs10\common7\tools\vsvars32.bat'
 			exec '!start cmd /c '.vcload.' & cl %:p & %:p:r.exe & del %:p:r.obj & pause'
+		elseif match(getline(1) , '//c++11') != -1
+			let out = '%:p:h\out'
+			let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
+			execute '!start cmd /c g++ %:p -Wall -D__NO_INLINE__ -Wno-unused -O2 -std=c++11 -o '.out.' & '.run.' & pause'
+			"execute '!start cmd /c g++ %:p -Wall -Wno-unused -O2 -lboost_coroutine -std=c++11 -o '.out.' & '.run.' & pause'
+			"g++ Test.cpp -o Test -Wall -O2 -lboost_coroutine -std=c++11
 		else
 			let out = '%:p:h\out'
 			let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
@@ -80,6 +79,23 @@ func g:compileRun()
 
 	if &filetype == 'scheme'
 		exe '! racket -t %:p'
+	endif
+
+	if &filetype == 'haskell'
+		if search('\C^main\>', 'Wnb', 0, 50) == 0 "no main function before cursor
+			exe "!start cmd /c ghci -H100M +RTS -K1G -M2G -RTS %"
+		else
+			let out = expand('%:p:h').'\out'
+			let run = out.' +RTS -p -s'
+"v:shell_error
+			let output = system("ghc -H100M -O2 -Wall -prof -auto-all -rtsopts -o ".out." +RTS -K1G -M2G -RTS ".expand("%:p")) " -fforce-recomp
+			if v:shell_error == 0
+				call system("del ".expand("%:p:r").".hi ".expand("%:p:r").".o")
+				exec "!start cmd /c ".run." & pause"
+			else
+				echo output
+			endif
+		endif
 	endif
 
 	if &filetype == 'html'
