@@ -90,11 +90,11 @@ func s:font()
 """ ~!@#$%^&*()_+ QWERTYUIOP{}| ASDFGHJKL:" ZXCVBNM<>?
 """ Courier New ; Times New Roman
 	if has("gui_running")
-	    if has("gui_gtk2")
+		if has("gui_gtk2")
 			set guifont=Courier\ 10\ Pitch\ 16
-	    elseif has("x11")
+		elseif has("x11")
 			set guifont=*-lucidatypewriter-medium-r-normal-*-*-180-*-*-m-*-*
-	    elseif has("gui_win32")
+		elseif has("gui_win32")
 			set guifont=courier_new:h16
 			"auto bufenter * set guifont=courier_new:h16		"一般字体
 			"auto bufenter *.txt if &ft=='help'|set gfn=courier_new:h14|endif
@@ -102,7 +102,7 @@ func s:font()
 			"set guifont=arial_monospaced_for_sap:h14:cansi
 			"set guifontwide=幼圆:h14.5:cgb2312				" 中文
 			"set guifontwide=方正准圆简体:h14.5:cgb2312
-	    endif
+		endif
 	endif
 endfunc
 
@@ -136,6 +136,7 @@ endfunc
 func s:plugins()
 	func s:vundle_conf() "NOTE: comments after Bundle command are not allowed..
 		Bundle 'luochen1990/rainbow'
+		Bundle 'luochen1990/indent-detector.vim'
 		Bundle 'luochen1990/select-and-search'
 	"	Bundle 'rdark'
 	"	Bundle 'genindent.vim'
@@ -238,61 +239,6 @@ func s:helpers()
 	command! -nargs=0 -bar PyV call s:py_ver()
 	command! -nargs=0 -bar Py3V call s:py3_ver()
 	command Syname echo synIDattr(synID(line("."), col("."), 1), "name")
-
-	func g:search_nearby(pat)
-		return search(a:pat, 'Wnc', 0, 20) > 0 || search(a:pat, 'Wnb', 0, 20) > 0
-	endfunc
-
-	func g:indent_detect(autoadjust)
-		let leadtab = g:search_nearby('^\t')
-		let leadspace = g:search_nearby('^ ')
-		if leadtab + leadspace < 2 && g:search_nearby('^\(\t\+ \| \+\t\)') == 0
-			if leadtab
-				if a:autoadjust
-					setl noexpandtab nosmarttab tabstop=4 shiftwidth=4 softtabstop=4
-				endif
-				return 'tab'
-			elseif leadspace
-				let spacenum = 0
-				if g:search_nearby('^ [^\t ]')
-					let spacenum = 1
-				elseif g:search_nearby('^  [^\t ]')
-					let spacenum = 2
-				elseif g:search_nearby('^   [^\t ]')
-					let spacenum = 3
-				elseif g:search_nearby('^    [^\t ]')
-					let spacenum = 4
-				endif
-				if a:autoadjust && spacenum
-					let n = spacenum
-					exec 'setl expandtab smarttab tabstop='.n.' shiftwidth='.n.' softtabstop='.n
-				endif
-				return 'space * '.(spacenum ? spacenum : '>4')
-			else
-				return 'default'
-			endif
-		else
-			return 'mixed'
-		endif
-	endfunc
-
-	func g:indent_detect_hook()
-		let rst = g:indent_detect(1)
-		if &readonly == 0
-			if rst == 'mixed'
-				echohl ErrorMsg | echo 'mixed indent' | echohl None 
-			elseif rst[0] == 's' "space
-				if rst[8] == '>' "too many
-					echohl WarningMsg | echo 'too many leading spaces here.' | echohl None 
-				else
-					echo 'indent: '.rst
-				endif
-			endif
-		endif
-	endfunc
-
-	auto bufenter * call g:indent_detect_hook()
-
 
 	func g:ia_nth_word(args, count, ia)
 		let coma = stridx(a:args, ' ')
