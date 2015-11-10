@@ -11,6 +11,10 @@ func g:compileRun()
 			execute '!start cmd /c g++ %:p -Wall -D__NO_INLINE__ -Wno-unused -O2 -std=c++11 -o '.out.' & '.run.' & pause'
 			"execute '!start cmd /c g++ %:p -Wall -Wno-unused -O2 -lboost_coroutine -std=c++11 -o '.out.' & '.run.' & pause'
 			"g++ Test.cpp -o Test -Wall -O2 -lboost_coroutine -std=c++11
+		elseif match(getline(1) , '//c++14') != -1
+			let out = '%:p:h\out'
+			let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
+			execute '!start cmd /c g++ %:p -Wall -D__NO_INLINE__ -Wno-unused -O2 -std=c++14 -o '.out.' & '.run.' & pause'
 		else
 			let out = '%:p:h\out'
 			let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
@@ -56,14 +60,19 @@ func g:compileRun()
 			exe '! cmd /c echo file unreadable !'
 		endif
 	endif
-	
+
+	if &filetype == 'javascript'
+		exe '!start cmd /k node %:p'
+	endif
+
 	if &filetype == 'coffee'
 		if filereadable(expand('%:p:r').'.html')
 			if filereadable(expand('%:p:r').'.js')
 				let r = system('coffee -cm '.expand('%:p'))
 				echo r
 			endif
-			exe 'silent !start chrome --allow-file-access-from-files --Incognito %:p:r.html'
+			"exe 'silent !start chrome --allow-file-access-from-files --Incognito %:p:r.html'
+			exe '!start cmd /k coffee %:p'
 		else
 			exe '!start cmd /k coffee %:p'
 		endif
@@ -86,9 +95,11 @@ func g:compileRun()
 			exe "!start cmd /c ghci -H100M +RTS -K1G -M2G -RTS %"
 		else
 			let out = expand('%:p:h').'\out'
-			let run = out.' +RTS -p -s'
+			"let run = out.' +RTS -p -s'
+			let run = out.' +RTS -s'
 "v:shell_error
-			let output = system("ghc -H100M -O2 -Wall -prof -auto-all -rtsopts -o ".out." +RTS -K1G -M2G -RTS ".expand("%:p")) " -fforce-recomp
+			"let output = system("ghc -H100M -O3 -Wall -prof -auto-all -rtsopts -o ".out." +RTS -K1G -M2G -RTS ".expand("%:p")) " -fforce-recomp
+			let output = system("ghc -H100M -O3 -Wall -auto-all -rtsopts -o ".out." +RTS -K1G -M2G -RTS ".expand("%:p")) " -fforce-recomp
 			if v:shell_error == 0
 				call system("del ".expand("%:p:r").".hi ".expand("%:p:r").".o")
 				exec "!start cmd /c ".run." & pause"
