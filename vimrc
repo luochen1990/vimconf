@@ -151,8 +151,12 @@ func s:plugins()
 	"	Bundle 'groenewege/vim-less'
 		Bundle 'wlangstroth/vim-racket'
 		Bundle 'lambdatoast/elm.vim'
+		Bundle 'eagletmt/neco-ghc'
+		Bundle 'clausreinke/typescript-tools.vim'
+		Bundle 'leafgarland/typescript-vim'
 	endfunc
 	if isdirectory($vimconf.'/bundle/vundle')
+		let g:vundle_default_git_proto = 'git'
 		filetype off
 		set rtp+=$vimconf/bundle/vundle/
 		call vundle#rc($vimconf.'/bundle')
@@ -160,7 +164,6 @@ func s:plugins()
 		call s:vundle_conf()
 		filetype plugin indent on
 	endif
-
 	let g:mystatusline_activated = 1
 	let g:rainbow_active = 1
 	let g:rainbow_conf = {
@@ -169,6 +172,8 @@ func s:plugins()
 	\	}
 	\}
 	let g:select_and_search_active = 2
+	let g:syntastic_cpp_compiler = 'g++'
+	let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
 	let g:syntastic_python_checkers = ['pyflakes']
 	let g:syntastic_python3_checkers = ['pyflakes']
 	let g:ctrlp_map = 'e'
@@ -416,7 +421,9 @@ func s:keymap()
 		vnoremap al <s-g><s-v>gg
 		vnoremap v <s-v>
 		vnoremap <s-v> v
-		nnoremap <s-q> q
+		nnoremap <a-q> q
+		nnoremap <s-q> q1
+		nnoremap <s-r> @1
 	endfunc
 
 	call s:keymap_init()
