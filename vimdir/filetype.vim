@@ -4,4 +4,5 @@ au bufnewfile,bufread *.cpp{11,x} set filetype=cpp11
 au bufnewfile,bufread *.{lit,}coffee set filetype=coffee
 au bufnewfile,bufread *.jade set filetype=jade
 au bufnewfile,bufread *.styl{,us} set filetype=stylus
+au bufnewfile,bufread *.idr set filetype=idris
 

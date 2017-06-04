@@ -15,7 +15,7 @@
 if exists('g:mystatusline_activated') && g:mystatusline_activated
 	let statusline_parts = [
 				\"%1* %{&ff} %{&ff=='unix'?'\\n':(&ff=='mac'?'\\r':'\\r\\n')}",
-				\"%2* %{&fenc!=''?&fenc:&enc}",
+				\"%2* %{&fenc!=''?&fenc:&enc}%{&bomb?'(bom)':''}",
 				\"%3* %{&ft}%m",
 				\"%4* %<%50(%)%50(%)%50(%)%{expand('%:p')}",
 				\"%5* %3(%{line('.')==line('$')?'end':(line('.')*100/line('$')).'%'}%)",

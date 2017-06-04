@@ -26,7 +26,8 @@ hi CursorLine guibg=#292f31
 
 " Default Colors
 hi Normal guifg=#babdb6 guibg=#303336
-hi NonText guifg=#2c3032 guibg=#2c3032 gui=none
+"hi NonText guifg=#2c3032 guibg=#2c3032 gui=none
+hi NonText guifg=#303336 guibg=#303336 gui=none
 hi Cursor guibg=#babdb6
 hi ICursor guibg=#babdb6
 
@@ -64,7 +65,8 @@ hi FoldColumn guifg=#3465a4 guibg=#000000
 " Specials
 hi Title guifg=#fcaf3e
 hi Todo guifg=#fcaf3e guibg=bg
-hi SpecialKey guifg=#ef2929
+"hi SpecialKey guifg=#ef2929
+hi SpecialKey guifg=#605040
 
 " Tabs
 hi TabLine guibg=#0a1012 guifg=#888a85

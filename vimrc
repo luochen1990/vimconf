@@ -42,7 +42,7 @@ func s:general()
 	set visualbell t_vb=
 	set history=1000
 	set nowritebackup nobackup noswapfile
-	"set ignorecase smartcase
+	set ignorecase smartcase
 	"set tags=tags;
 	set keymodel=startsel,stopsel selectmode=
 	set showtabline=1
@@ -77,7 +77,7 @@ func s:encoding()
 	set encoding=utf-8
 	setglobal fileencoding=utf-8
 	"setglobal bomb
-	set fileencodings=ucs-bom,utf-8,gb2312,cp936,gb18030,big5,euc-jp,euc-kr,latin1
+	set fileencodings=ucs-bom,ascii,utf-8,gb2312,cp936,gb18030,big5,euc-jp,euc-kr,latin1
 	if has('multi_byte') && v:version > 601 |set ambiwidth=double |endif
 	if has('win32') || has('win64') |language messages zh_cn.utf-8 |endif
 	"set helplang=zh
@@ -90,7 +90,10 @@ func s:font()
 """ ~!@#$%^&*()_+ QWERTYUIOP{}| ASDFGHJKL:" ZXCVBNM<>?
 """ Courier New ; Times New Roman
 	if has("gui_running")
-		if has("gui_gtk2")
+		if has('directx')
+			set guifont=Source\ Code\ Pro:h14
+			set rop=type:directx,gamma:1.0,contrast:0.5,level:1,geom:1,renmode:4,taamode:1
+		elseif has("gui_gtk2")
 			set guifont=Courier\ 10\ Pitch\ 16
 		elseif has("x11")
 			set guifont=*-lucidatypewriter-medium-r-normal-*-*-180-*-*-m-*-*
@@ -111,21 +114,32 @@ func s:editor()
 	filetype plugin indent on
 
 	syntax enable
-	silent! colorscheme desert
+	"silent! colorscheme desert
 	silent! colorscheme rdark2
+	"silent! colorscheme wombat256mod
+	"silent! colorscheme grb256
+	"silent! colorscheme codeschool
+	"silent! colorscheme space-vim-dark
+	"set background=light
+	"colorscheme solarized
+	silent! hi Comment cterm=italic
+
 	auto guienter * set cursorline
 	set number showmode showcmd ruler
 	"if v:version >= 704 |set relativenumber |endif
 
+	"set spell spelllang=en_us
+	auto bufenter * syntax spell notoplevel
 	set nowrapscan incsearch hlsearch
 
 	set virtualedit=block
 	set foldmethod=syntax foldlevel=10
 	set autoindent smartindent
-	set noexpandtab nosmarttab tabstop=4 shiftwidth=4 softtabstop=4 " :retab or :retab!
-"# vim: set noexpandtab nosmarttab tabstop=4 shiftwidth=4 softtabstop=4:
-"# vim: set expandtab smarttab tabstop=4 shiftwidth=4 softtabstop=4:
+	"set noexpandtab nosmarttab tabstop=4 shiftwidth=4 softtabstop=4 " :retab or :retab!
+	set expandtab smarttab tabstop=4 shiftwidth=4 softtabstop=4
 
+	set list
+	set listchars=tab:⋮\ ,trail:␣,eol:\ ,nbsp:▫     "backup: ⋮☇✓✗▫‚„¬𝄻𝄽
 	set laststatus=2
 
 	set nowrap sidescrolloff=20 sidescroll=1
@@ -138,11 +152,17 @@ func s:plugins()
 		Bundle 'luochen1990/rainbow'
 		Bundle 'luochen1990/indent-detector.vim'
 		Bundle 'luochen1990/select-and-search'
+		Bundle 'Shougo/vimproc.vim'
+		Bundle 'Shougo/vimshell.vim'
+		Bundle 'liuchengxu/space-vim-dark'
+		Bundle 'altercation/vim-colors-solarized'
 	"	Bundle 'rdark'
 	"	Bundle 'genindent.vim'
 		Bundle 'ervandew/supertab'
 	"	Bundle 'justinmk/vim-sneak'
+		Bundle 'ap/vim-css-color'
 		Bundle 'scrooloose/syntastic'
+		"Bundle 'scrooloose/nerdtree'
 	"	Bundle 'python.vim'
 	"	Bundle 'davidhalter/jedi-vim'
 		Bundle 'kchmck/vim-coffee-script'
@@ -154,6 +174,8 @@ func s:plugins()
 		Bundle 'eagletmt/neco-ghc'
 		Bundle 'clausreinke/typescript-tools.vim'
 		Bundle 'leafgarland/typescript-vim'
+		Bundle 'raichoo/purescript-vim'
+		Bundle 'idris-hackers/idris-vim'
 	endfunc
 	if isdirectory($vimconf.'/bundle/vundle')
 		let g:vundle_default_git_proto = 'git'
@@ -164,11 +186,14 @@ func s:plugins()
 		call s:vundle_conf()
 		filetype plugin indent on
 	endif
+
 	let g:mystatusline_activated = 1
 	let g:rainbow_active = 1
 	let g:rainbow_conf = {
 	\	'separately': {
-	\		'stylus': 0,
+	\		'stylus': {
+	\			'parentheses': ['start=/{/ end=/}/ fold contains=@colorableGroup'],
+	\		},
 	\	}
 	\}
 	let g:select_and_search_active = 2
@@ -182,6 +207,11 @@ func s:plugins()
 	let g:ctrlp_mruf_case_sensitive = 0
 	let g:SuperTabNoCompleteAfter = ['\s', ';', '|']
 	let g:SuperTabCrMapping = 0
+	let g:purescript_indent_if = 4
+	let g:purescript_indent_case = 4
+	let g:purescript_indent_let = 4
+	let g:purescript_indent_where = 4
+	let g:purescript_indent_do = 4
 	"let g:jedi#auto_vim_configuration = 0
 	"let g:jedi#goto_assignments_command = "<leader>g"
 	"let g:jedi#goto_definitions_command = "<leader>d"
@@ -203,6 +233,19 @@ func s:plugins()
 	"omap f <Plug>Sneak_s
 	"omap F <Plug>Sneak_S
 
+	"autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+	"let g:nerdtreeOpened = 0
+	"func g:toggleNerdtree()
+	"	if g:nerdtreeOpened == 0
+	"		NERDTree
+	"		echo 0
+	"		let g:nerdtreeOpened = 1
+	"	else
+	"		NERDTreeClose
+	"		echo 1
+	"		let g:nerdtreeOpened = 0
+	"	endif
+	"endfunc
 endfunc
 
 func s:helpers()
@@ -245,7 +288,7 @@ func s:helpers()
 	command! -nargs=0 -bar Py3V call s:py3_ver()
 	command Syname echo synIDattr(synID(line("."), col("."), 1), "name")
 
-	func g:ia_nth_word(args, count, ia)
+	func Ia_nth_word(args, count, ia)
 		let coma = stridx(a:args, ' ')
 		let [n, txt] = [strpart(a:args, 0, coma), strpart(a:args, coma+1)]
 		let [nxt, prv] = a:ia == 'i' ? ['W', 'B'] : ['E', 'gE']
@@ -253,14 +296,14 @@ func s:helpers()
 		exe 'normal! '.join(repeat([locator.a:ia.txt."\x1b"], a:count), 'j')
 	endfunc
 
-	func g:compilers()
+	func Compilers()
 		update
 		cd %:p:h
-		call g:compileRun()
+		call CompileRun()
 		cd $ws
 	endfunc
 
-	func g:get_selected_text()
+	func Get_selected_text()
 		let tmp = @"
 		normal! gvy
 		normal! gv
@@ -270,8 +313,8 @@ func s:helpers()
 
 	let g:parentheses = [['(', ')'], ['[', ']'], ['{', '}'], ['<', '>'], ['"', '"'], ["'", "'"], ['`', '`']]
 
-	func g:substitute_parentheses(lp, rp, parentheses)
-		let s = g:get_selected_text()
+	func Substitute_parentheses(lp, rp, parentheses)
+		let s = Get_selected_text()
 		if len(s) >= 2
 			for [lp , rp] in a:parentheses
 				if s[0] == lp && s[-1:] == rp
@@ -287,44 +330,43 @@ endfunc
 
 func s:keymap()
 	func s:keymap_init()
-		call s:compiler_invoking()
+		call s:basic_operation()
 		call s:line_browsing()
 		call s:clipboard_synchronizing()
-		call s:tab_browsing()
-		call s:format_adjusting()
-		call s:my_shotcut()
 		call s:mode_switching()
+		call s:parentheses_operations()
+		call s:compiler_invoking()
+		call s:format_adjusting()
+		"call s:tab_browsing()
+		call s:advanced_shotcut()
+		"let NERDTreeWinPos="right"
+		"nnoremap tt :NERDTree<cr>
+		"nnoremap tc :NERDTreeClose<cr>
 	endfunc
 
-	func s:my_shotcut()
-		"binary editing: :%!xxd , turn back: :%!xxd -r
-		command W w !sudo tee % > /dev/null
-		command -nargs=? -range=% Lno :let i=1|<line1>,<line2>g/^/s/^/\=<q-args>!=''?eval(<q-args>):printf("%d",i)/|let i+=1|nohl
-		command -nargs=? -range=% Lnos :let i=1|<line1>,<line2>g//s//\=<q-args>!=''?eval(<q-args>):printf("%d",i)/|let i+=1|nohl
-		"command -nargs=? -range=% Cid :let i=1|<line1>,<line2>g/^/s/^/\=printf(<q-args>!=''?<q-args>:"%d",i)/|let i+=1|nohl
-		"command -nargs=? -range=% Cidx :let i=1|<line1>,<line2>g//s/^/\=printf(<q-args>!=''?<q-args>:"%d",i)/|let i+=1|nohl
-		command -range=% DeleteBlankLine :<line1>,<line2>g/^\s*$/d
-		command CD :exe 'cd %:p:h'
-		command -complete=file -nargs=+ Diff :exe 'cd %:p:h' |vertical diffsplit <args>
-		command -range -nargs=1 WInsert :call g:ia_nth_word('<args>', <line2>-<line1>+1, 'i')
-		command -range -nargs=1 WAppend :call g:ia_nth_word('<args>', <line2>-<line1>+1, 'a')
-		command UniqueSpaces :%s/\S\zs\s\+/ /g
-		command SyncSearch :let @/=select_and_search#plain_text_pattern(@+)
-
-		nnoremap <f10> :call pep8#adjust_format()<cr>
-		nnoremap <f1> :nohl<cr>
+	func s:basic_operation()
+		"nnoremap <f1> :nohl<cr>
 		nnoremap a <s-a>
 		vnoremap <bs> "_x
 		nnoremap <s-u> <c-r>
 		nnoremap / 0/
-		nnoremap \/ 0/\v
+		"nnoremap \/ 0/\v
 		"nnoremap s :%s///g<left><left>
 		vnoremap s :s///g<left><left>
-		noremap \h :tab h<space>
-		"nnoremap <leader>m :%s/<c-v><cr>//ge<cr>'tzt'm
+		"noremap \h :tab h<space>
+
+		nnoremap w :update<cr>
+		nnoremap q :q<cr>
+		nnoremap e :e<space>
+		"nnoremap <s-e> :exec ':e<space>'.expand('$ws')
+		"auto bufenter * exec 'nnoremap <s-e> :e<space>'.expand('%:p:h').'/'
+		"nnoremap t :call g:toggleNerdtree()<cr>
+	endfunc
+
+	func s:parentheses_operations()
 		func s:map_paratheses_op(start_with)
 			"vnoremap <expr> w g:wrap_with_parentheses(v:operator)
-			let cmd_pat = 'vnoremap %s%s%s :<c-u>call g:substitute_parentheses("%s", "%s", %s)<cr>%s'
+			let cmd_pat = 'vnoremap %s%s%s :<c-u>call Substitute_parentheses("%s", "%s", %s)<cr>%s'
 			for [lp , rp] in g:parentheses
 				for p in [lp , rp]
 					let lp_ = escape(lp , '"')
@@ -341,10 +383,34 @@ func s:keymap()
 		call s:map_paratheses_op('w')
 	endfunc
 
+	func s:advanced_shotcut()
+		"binary editing: :%!xxd , turn back: :%!xxd -r
+		command W w !sudo tee % > /dev/null
+		command -nargs=? -range=% Lno :let i=1|<line1>,<line2>g/^/s/^/\=<q-args>!=''?eval(<q-args>):printf("%d",i)/|let i+=1|nohl
+		command -nargs=? -range=% Lnos :let i=1|<line1>,<line2>g//s//\=<q-args>!=''?eval(<q-args>):printf("%d",i)/|let i+=1|nohl
+		"command -nargs=? -range=% Cid :let i=1|<line1>,<line2>g/^/s/^/\=printf(<q-args>!=''?<q-args>:"%d",i)/|let i+=1|nohl
+		"command -nargs=? -range=% Cidx :let i=1|<line1>,<line2>g//s/^/\=printf(<q-args>!=''?<q-args>:"%d",i)/|let i+=1|nohl
+		command -range=% DeleteBlankLine :<line1>,<line2>g/^\s*$/d
+		command CD :exe 'cd %:p:h'
+		command -complete=file -nargs=+ Diff :exe 'cd %:p:h' |vertical diffsplit <args>
+		command -range -nargs=1 WInsert :call Ia_nth_word('<args>', <line2>-<line1>+1, 'i')
+		command -range -nargs=1 WAppend :call Ia_nth_word('<args>', <line2>-<line1>+1, 'a')
+		command UniqueSpaces :%s/\S\zs\s\+/ /g
+		command SyncSearch :let @/=select_and_search#plain_text_pattern(@+)
+		command Syn :echo synIDattr(synID(line('.'), col('.'), 0), 'name')
+		nnoremap <f1> :echo synIDattr(synID(line('.'), col('.'), 0), 'name')<cr>
+		nnoremap <f2> :echo ("hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+		\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+		\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">")<cr>
+		nnoremap <f3> :echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')<cr>
+		nnoremap <f10> :call pep8#adjust_format()<cr>
+		"nnoremap <leader>m :%s/<c-v><cr>//ge<cr>'tzt'm
+	endfunc
+
 	func s:compiler_invoking()
-		nnoremap cr :call g:compilers()<cr>
-		nnoremap <f9> :call g:compilers()<cr>
-		inoremap <f9> <esc>:call g:compilers()<cr>
+		nnoremap cr :call Compilers()<cr>
+		nnoremap <f9> :call Compilers()<cr>
+		inoremap <f9> <esc>:call Compilers()<cr>
 	endfunc
 
 	func s:line_browsing()
@@ -361,8 +427,8 @@ func s:keymap()
 		"nnoremap f 0f
 		noremap n nzz
 		noremap <s-n> <s-n>zz
-		"vnoremap n :<c-u>let @/='\V'.escape(g:get_selected_text(),'\')<cr><esc>nzz
-		"vnoremap <s-n> :<c-u>let @/=g:get_selected_text()<cr><esc><s-n>zz
+		"vnoremap n :<c-u>let @/='\V'.escape(Get_selected_text(),'\')<cr><esc>nzz
+		"vnoremap <s-n> :<c-u>let @/=Get_selected_text()<cr><esc><s-n>zz
 		noremap * *zz
 		noremap # #zz
 		noremap <c-o> <c-o>zz
@@ -371,38 +437,36 @@ func s:keymap()
 		noremap <s-k> <c-u><s-m>
 		noremap <s-h> b
 		noremap <s-l> e
+		noremap <a-i> :ZoomIn<cr>
+		noremap <a-o> :ZoomOut<cr>
 	endfunc
 
 	func s:clipboard_synchronizing()
-		set clipboard+=unnamed
+		"set clipboard+=unnamed
 		noremap x "_x
-		"nnoremap y "+y
-		"nnoremap d "+d
-		"nnoremap p "+p
-		"nnoremap <s-p> "+<s-p>
-		"vnoremap y "+y
-		"vnoremap d "+d
-		"vnoremap p "+p
-		"inoremap <a-p> <esc>"+p
+		nnoremap y "*y
+		nnoremap d "*d
+		nnoremap p "*p
+		nnoremap <s-p> "*<s-p>
+		vnoremap y "*y
+		vnoremap d "*d
+		vnoremap p "*p
+		"inoremap <a-p> <esc>"*p
 	endfunc
 
 	func s:tab_browsing()
-		nnoremap w :update<cr>
-		nnoremap q :q<cr>
-		nnoremap e :e<space>
-		"nnoremap <s-e> :exec ':e<space>'.expand('$ws')
-		"auto bufenter * exec 'nnoremap <s-e> :e<space>'.expand('%:p:h').'/'
-		nnoremap t :tabe<space>
+		"nnoremap t :tabe<space>
 		"nnoremap <s-t> :exec ':tabe<space>'.expand('$ws')
 		"auto bufenter * exec 'nnoremap <s-t> :tabe<space>'.expand('%:p:h').'/'
 		"nnoremap tq :q<cr>
 		"nnoremap tc g<s-t>:q<cr> "nnoremap tj :tabe<space>$ws<cr> "nnoremap tl :tabe<space>%:p:h\<cr>
-		nnoremap <c-tab> gt
-		nnoremap <c-s-tab> g<s-t>
-		inoremap <c-tab> <esc>gt
-		inoremap <c-s-tab> <esc>g<s-t>
-		nnoremap <c-j> <c-w>j
-		nnoremap <c-k> <c-w>k
+		"
+		"nnoremap <c-tab> gt
+		"nnoremap <c-s-tab> g<s-t>
+		"inoremap <c-tab> <esc>gt
+		"inoremap <c-s-tab> <esc>g<s-t>
+		"nnoremap <c-j> <c-w>j
+		"nnoremap <c-k> <c-w>k
 	endfunc
 
 	func s:format_adjusting()
