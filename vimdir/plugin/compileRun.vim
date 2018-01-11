@@ -46,18 +46,28 @@ func CompileRun()
 	"endif
 	
 	if &filetype == 'tex'
-		exe '!start cmd /c del %:p:r.pdf & xelatex %:p:r.tex & del %:p:r.aux & del %:p:r.log'
-		let cnt = 0
-		while cnt < 10
-			let cnt += 1
-			sleep 500m
-			if filereadable(expand('%:p:r').'.pdf')
-				exe '!start cmd /c acrord32 %:p:r.pdf'
-				break
-			endif
-		endwhile
-		if cnt == 10
-			exe '! cmd /c echo file unreadable !'
+		exe '!start cmd /c del %:p:r.pdf && xelatex %:p:r.tex && del %:p:r.aux && del %:p:r.log'
+		"let cnt = 0
+		"while cnt < 10
+		"	let cnt += 1
+		"	sleep 500m
+		"	if filereadable(expand('%:p:r').'.pdf')
+		"		"exe '!start cmd /c acrord32 %:p:r.pdf'
+		"		exe '!start cmd /c SumatraPDF %:p:r.pdf'
+		"		break
+		"	endif
+		"endwhile
+		"if cnt == 10
+		"	exe '! cmd /c echo file unreadable !'
+		"endif
+	endif
+
+	if &filetype == 'markdown'
+		if search('\n\n----\?\n\n', 'wn', 0, 50) == 0 "no horizentol or vertical bar
+			exe 'silent !start chrome --allow-file-access-from-files --Incognito %:p'
+		else
+			exe '!start cmd /c reveal-md -w "%"'
+			"exe 'silent !start reveal-md %:p' "this not available, not sure why.
 		endif
 	endif
 
@@ -113,7 +123,7 @@ func CompileRun()
 		endif
 	endif
 
-	if &filetype == 'idris'
+	if &filetype == 'idris' || &filetype == 'lidris'
 		if search('\C^main\>', 'Wnb', 0, 50) == 0 "no main function before cursor
 			exe '!start cmd /c idris -p contrib -p effects -p lightyear -p prelude -p pruviloj \"%\"'
 		else

@@ -54,7 +54,7 @@ func s:general()
 		if stridx(&guioptions, 'm') >= 0 |set langmenu=zh_cn.utf-8 |source $vimruntime/delmenu.vim |source $vimruntime/menu.vim |endif
 		"set guitablabel=%N\ %f
 		if has('mouse')
-			set mouse=a mousefocus
+			set mouse=a mousefocus mousemodel=extend
 		endif
 		if has('gui_running') "has('win32') || has('win64')
 			"auto guienter * silent! call libcallnr("vimtweak.dll", 'SetAlpha', 220)
@@ -62,13 +62,19 @@ func s:general()
 			auto guienter * simalt ~x "MAXIMIZE WINDOW
 			noremap <a-space> :simalt ~<cr>
 			inoremap <a-space> <esc>:simalt ~<cr>
-			set imactivatekey=c-space
-			"imap <silent> <esc> <esc>:set iminsert=0<cr>
-			set iminsert=0
+			"set imactivatekey=c-space
+			"inoremap <silent> <esc> <esc>:set iminsert=0<cr>
+			"set iminsert=0
 		endif
 	else
 		set showmatch matchtime=2
 	endif
+
+	"augroup NO_CURSOR_MOVE_ON_FOCUS
+	"	au!
+	"	au FocusLost * let g:oldmouse=&mouse | set mouse=
+	"	au FocusGained * if exists('g:oldmouse') | let &mouse=g:oldmouse | unlet g:oldmouse | endif
+	"augroup END
 endfunc
 
 func s:encoding()
@@ -76,19 +82,73 @@ func s:encoding()
 	if &termencoding == '' |let &termencoding = &encoding |endif
 	set encoding=utf-8
 	setglobal fileencoding=utf-8
+	set termencoding=utf-8
+	"set termencoding=cp936
 	"setglobal bomb
-	set fileencodings=ucs-bom,ascii,utf-8,gb2312,cp936,gb18030,big5,euc-jp,euc-kr,latin1
+	set fileencodings=ucs-bom,utf-8,ascii,gb2312,cp936,gb18030,big5,euc-jp,euc-kr,latin1
 	if has('multi_byte') && v:version > 601 |set ambiwidth=double |endif
 	if has('win32') || has('win64') |language messages zh_cn.utf-8 |endif
 	"set helplang=zh
 	set fileformat=unix
 	auto bufenter * silent! if &modifiable && line('$') == 1 && getline('$') == '' |set fileformat=unix |update |endif
+
+	"" autocmds to automatically enter hex mode and handle file writes properly
+	"if has("autocmd")
+	"	" vim -b : edit binary using xxd-format!
+	"	augroup Binary
+	"		au!
+
+	"		" set binary option for all binary files before reading them
+	"		au BufReadPre *.bin,*.hex setlocal binary
+
+	"		" if on a fresh read the buffer variable is already set, it's wrong
+	"		au BufReadPost *
+	"				\ if exists('b:editHex') && b:editHex |
+	"				\	 let b:editHex = 0 |
+	"				\ endif
+
+	"		" convert to hex on startup for binary files automatically
+	"		au BufReadPost *
+	"				\ if &binary | Hexmode | endif
+
+	"		" When the text is freed, the next time the buffer is made active it will
+	"		" re-read the text and thus not match the correct mode, we will need to
+	"		" convert it again if the buffer is again loaded.
+	"		au BufUnload *
+	"				\ if getbufvar(expand("<afile>"), 'editHex') == 1 |
+	"				\	 call setbufvar(expand("<afile>"), 'editHex', 0) |
+	"				\ endif
+
+	"		" before writing a file when editing in hex mode, convert back to non-hex
+	"		au BufWritePre *
+	"				\ if exists("b:editHex") && b:editHex && &binary |
+	"				\	let oldro=&ro | let &ro=0 |
+	"				\	let oldma=&ma | let &ma=1 |
+	"				\	silent exe "%!xxd -r" |
+	"				\	let &ma=oldma | let &ro=oldro |
+	"				\	unlet oldma | unlet oldro |
+	"				\ endif
+
+	"		" after writing a binary file, if we're in hex mode, restore hex mode
+	"		au BufWritePost *
+	"				\ if exists("b:editHex") && b:editHex && &binary |
+	"				\	let oldro=&ro | let &ro=0 |
+	"				\	let oldma=&ma | let &ma=1 |
+	"				\	silent exe "%!xxd" |
+	"				\	exe "set nomod" |
+	"				\	let &ma=oldma | let &ro=oldro |
+	"				\	unlet oldma | unlet oldro |
+	"				\ endif
+	"	augroup END
+	"endif
+
 endfunc
 
 func s:font()
 """ `1234567890-= qwertyuiop[]\ asdfghjkl;' zxcvbnm,./
 """ ~!@#$%^&*()_+ QWERTYUIOP{}| ASDFGHJKL:" ZXCVBNM<>?
 """ Courier New ; Times New Roman
+""" use `set guifont=*` to select font from list
 	if has("gui_running")
 		if has('directx')
 			set guifont=Source\ Code\ Pro:h14
@@ -101,7 +161,7 @@ func s:font()
 			set guifont=courier_new:h16
 			"auto bufenter * set guifont=courier_new:h16		"一般字体
 			"auto bufenter *.txt if &ft=='help'|set gfn=courier_new:h14|endif
-			"set guifont=bitstream_vera_sans_mono:h14:cansi	" 英文
+			"set guifont=bitstream_vera_sans_mono:h14:cansi " 英文
 			"set guifont=arial_monospaced_for_sap:h14:cansi
 			"set guifontwide=幼圆:h14.5:cgb2312				" 中文
 			"set guifontwide=方正准圆简体:h14.5:cgb2312
@@ -135,11 +195,11 @@ func s:editor()
 	set virtualedit=block
 	set foldmethod=syntax foldlevel=10
 	set autoindent smartindent
-	"set noexpandtab nosmarttab tabstop=4 shiftwidth=4 softtabstop=4 " :retab or :retab!
-	set expandtab smarttab tabstop=4 shiftwidth=4 softtabstop=4
+	"set noexpandtab nosmarttab tabstop=4 shiftwidth=4 softtabstop=4 "NOTE: for TAB user. "NOTE: use `:set ts=4 noet | retab!` to switch from SPACE
+	set expandtab smarttab tabstop=4 shiftwidth=4 softtabstop=4 "NOTE: for SPACE user. "NOTE: use `:set ts=4 et | retab` to switch from TAB
 
 	set list
-	set listchars=tab:⋮\ ,trail:␣,eol:\ ,nbsp:▫     "backup: ⋮☇✓✗▫‚„¬𝄻𝄽
+	set listchars=tab:⋮\ ,trail:␣,eol:\ ,nbsp:▫		"backup: ⋮☇✓✗▫‚„¬𝄻𝄽
 	set laststatus=2
 
 	set nowrap sidescrolloff=20 sidescroll=1
@@ -154,28 +214,33 @@ func s:plugins()
 		Bundle 'luochen1990/select-and-search'
 		Bundle 'Shougo/vimproc.vim'
 		Bundle 'Shougo/vimshell.vim'
-		Bundle 'liuchengxu/space-vim-dark'
-		Bundle 'altercation/vim-colors-solarized'
-	"	Bundle 'rdark'
-	"	Bundle 'genindent.vim'
+		Bundle 'vim-scripts/Conque-Shell'
+		"Bundle 'liuchengxu/space-vim-dark'
+		"Bundle 'altercation/vim-colors-solarized'
+		"Bundle 'wakatime/vim-wakatime'
+		"Bundle 'rdark'
+		"Bundle 'genindent.vim'
 		Bundle 'ervandew/supertab'
-	"	Bundle 'justinmk/vim-sneak'
-		Bundle 'ap/vim-css-color'
-		Bundle 'scrooloose/syntastic'
-		"Bundle 'scrooloose/nerdtree'
-	"	Bundle 'python.vim'
-	"	Bundle 'davidhalter/jedi-vim'
+		"Bundle 'justinmk/vim-sneak'
+		"Bundle 'ap/vim-css-color'
+		"Bundle 'scrooloose/syntastic'
+		Bundle 'scrooloose/nerdtree'
+		Bundle 'Xuyuanp/nerdtree-git-plugin'
+		"Bundle 'python.vim'
+		"Bundle 'davidhalter/jedi-vim'
 		Bundle 'kchmck/vim-coffee-script'
-		Bundle 'digitaltoad/vim-jade'
-		Bundle 'wavded/vim-stylus'
-	"	Bundle 'groenewege/vim-less'
-		Bundle 'wlangstroth/vim-racket'
-		Bundle 'lambdatoast/elm.vim'
-		Bundle 'eagletmt/neco-ghc'
-		Bundle 'clausreinke/typescript-tools.vim'
-		Bundle 'leafgarland/typescript-vim'
-		Bundle 'raichoo/purescript-vim'
+		"Bundle 'digitaltoad/vim-jade'
+		"Bundle 'wavded/vim-stylus'
+		"Bundle 'groenewege/vim-less'
+		"Bundle 'wlangstroth/vim-racket'
+		"Bundle 'lambdatoast/elm.vim'
+		"Bundle 'eagletmt/neco-ghc'
+		"Bundle 'clausreinke/typescript-tools.vim'
+		"Bundle 'leafgarland/typescript-vim'
+		"Bundle 'raichoo/purescript-vim'
 		Bundle 'idris-hackers/idris-vim'
+		"Bundle 'trefis/coquille.git'
+		"Bundle 'let-def/vimbufsync'
 	endfunc
 	if isdirectory($vimconf.'/bundle/vundle')
 		let g:vundle_default_git_proto = 'git'
@@ -187,6 +252,15 @@ func s:plugins()
 		filetype plugin indent on
 	endif
 
+	func s:init_coq_ide()
+		silent CoqLaunch
+		map <buffer> <silent> <F2> :CoqUndo<CR>
+		map <buffer> <silent> <F3> :CoqNext<CR>
+		map <buffer> <silent> <F4> :CoqToCursor<CR>
+	endfunc
+	au FileType coq call s:init_coq_ide()
+
+	let g:vimshell_prompt = '$ '
 	let g:mystatusline_activated = 1
 	let g:rainbow_active = 1
 	let g:rainbow_conf = {
@@ -194,8 +268,11 @@ func s:plugins()
 	\		'stylus': {
 	\			'parentheses': ['start=/{/ end=/}/ fold contains=@colorableGroup'],
 	\		},
+	\		'coq': 0,
 	\	}
 	\}
+	let g:syntastic_javascript_checkers = ['eslint']
+	let g:syntastic_always_populate_loc_list = 1
 	let g:select_and_search_active = 2
 	let g:syntastic_cpp_compiler = 'g++'
 	let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
@@ -212,6 +289,7 @@ func s:plugins()
 	let g:purescript_indent_let = 4
 	let g:purescript_indent_where = 4
 	let g:purescript_indent_do = 4
+	let g:idris_allow_tabchar = 1
 	"let g:jedi#auto_vim_configuration = 0
 	"let g:jedi#goto_assignments_command = "<leader>g"
 	"let g:jedi#goto_definitions_command = "<leader>d"
@@ -233,9 +311,29 @@ func s:plugins()
 	"omap f <Plug>Sneak_s
 	"omap F <Plug>Sneak_S
 
-	"autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+	" Automatically quit vim if NERDTree is last and only buffer
+	autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+	let g:NERDTreeIgnore=['\.pyc','\~$','\.swp']
+	let g:NERDTreeNaturalSort=1
+	let g:NERDTreeQuitOnOpen=1
+	let g:NERDTreeChDirMode=2
+	let g:NERDTreeSortOrder=['\/$', '*']
+	let g:NERDTreeMouseMode=2
+	let g:NERDTreeNotificationThreshold = 500
+	let g:NERDTreeIndicatorMapCustom = {
+		\ "Modified"  : "✹",
+		\ "Staged"	  : "✚",
+		\ "Untracked" : "✭",
+		\ "Renamed"   : "➜",
+		\ "Unmerged"  : "═",
+		\ "Deleted"   : "✖",
+		\ "Dirty"	  : "✗",
+		\ "Clean"	  : "✔︎",
+		\ "Unknown"   : "?"
+		\ }
+
 	"let g:nerdtreeOpened = 0
-	"func g:toggleNerdtree()
+	"func ToggleNerdtree()
 	"	if g:nerdtreeOpened == 0
 	"		NERDTree
 	"		echo 0
@@ -331,7 +429,7 @@ endfunc
 func s:keymap()
 	func s:keymap_init()
 		call s:basic_operation()
-		call s:line_browsing()
+		call s:text_browsing()
 		call s:clipboard_synchronizing()
 		call s:mode_switching()
 		call s:parentheses_operations()
@@ -360,7 +458,10 @@ func s:keymap()
 		nnoremap e :e<space>
 		"nnoremap <s-e> :exec ':e<space>'.expand('$ws')
 		"auto bufenter * exec 'nnoremap <s-e> :e<space>'.expand('%:p:h').'/'
-		"nnoremap t :call g:toggleNerdtree()<cr>
+		"nnoremap t :call ToggleNerdtree()<cr>
+		"nnoremap t :NERDTreeToggle<cr>
+		"nnoremap <silent> t :NERDTreeFind<cr>
+		nnoremap <silent> t :NERDTreeFocus<cr>
 	endfunc
 
 	func s:parentheses_operations()
@@ -392,7 +493,7 @@ func s:keymap()
 		"command -nargs=? -range=% Cidx :let i=1|<line1>,<line2>g//s/^/\=printf(<q-args>!=''?<q-args>:"%d",i)/|let i+=1|nohl
 		command -range=% DeleteBlankLine :<line1>,<line2>g/^\s*$/d
 		command CD :exe 'cd %:p:h'
-		command -complete=file -nargs=+ Diff :exe 'cd %:p:h' |vertical diffsplit <args>
+		"command -complete=file -nargs=+ Diff :exe 'cd %:p:h' |vertical diffsplit <args>
 		command -range -nargs=1 WInsert :call Ia_nth_word('<args>', <line2>-<line1>+1, 'i')
 		command -range -nargs=1 WAppend :call Ia_nth_word('<args>', <line2>-<line1>+1, 'a')
 		command UniqueSpaces :%s/\S\zs\s\+/ /g
@@ -405,6 +506,7 @@ func s:keymap()
 		nnoremap <f3> :echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')<cr>
 		nnoremap <f10> :call pep8#adjust_format()<cr>
 		"nnoremap <leader>m :%s/<c-v><cr>//ge<cr>'tzt'm
+		command Diff :call Tabmerge('r') | diffthis | exec "normal! <c-w><c-w>" | diffthis
 	endfunc
 
 	func s:compiler_invoking()
@@ -413,7 +515,7 @@ func s:keymap()
 		inoremap <f9> <esc>:call Compilers()<cr>
 	endfunc
 
-	func s:line_browsing()
+	func s:text_browsing()
 		"au insertleave,cursormoved * normal! zz
 		nnoremap <esc> :noh<cr>zz
 		"NOTE: this will do some strange things(enter insert mode and ..) on RHEL when vim enter, so you can use the following one to avoid that
@@ -439,6 +541,8 @@ func s:keymap()
 		noremap <s-l> e
 		noremap <a-i> :ZoomIn<cr>
 		noremap <a-o> :ZoomOut<cr>
+		nnoremap <cr> <c-]>zz
+		nnoremap <bs> <c-o>zz
 	endfunc
 
 	func s:clipboard_synchronizing()
@@ -470,11 +574,23 @@ func s:keymap()
 	endfunc
 
 	func s:format_adjusting()
-		nnoremap <space> i<space><esc><right>
-		nnoremap <cr> <s-i><cr><esc>
-		nnoremap <s-cr> i<cr><esc>
-		nnoremap <bs> i<bs><esc><right>
-		"inoremap <s-bs> <esc><right>dbi
+		"nnoremap <space> i<space><esc><right>
+		"nnoremap <cr> <s-i><cr><esc>
+		"nnoremap <s-cr> i<cr><esc>
+		"nnoremap <bs> i<bs><esc><right>
+		""inoremap <s-bs> <esc><right>dbi
+	endfunc
+
+	func Start_stop_recording()
+		if has('b:recording') && b:recording == 1
+			let b:recording = 0
+			echo b:recording
+			normal! qQ
+		else
+			let b:recording = 1
+			echo b:recording
+			normal! q
+		endif
 	endfunc
 
 	func s:mode_switching()
@@ -485,9 +601,12 @@ func s:keymap()
 		vnoremap al <s-g><s-v>gg
 		vnoremap v <s-v>
 		vnoremap <s-v> v
+
+		" record
 		nnoremap <a-q> q
-		nnoremap <s-q> q1
-		nnoremap <s-r> @1
+		nnoremap Z <nop>
+		nnoremap <s-q> qZ
+		nnoremap <s-r> @Z
 	endfunc
 
 	call s:keymap_init()
