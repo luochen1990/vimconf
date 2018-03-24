@@ -10,12 +10,14 @@ endfunc
 
 func s:general()
 	let dropbox_candidates = [expand('~/Dropbox'), 'D:/Dropbox']
-	for dir in dropbox_candidates
-		if !exists('$Dropbox') && isdirectory(dir) |let $Dropbox = dir |endif
+	for d in dropbox_candidates
+		if !exists('$Dropbox') && isdirectory(d) |let $Dropbox = d |endif
 	endfor
-	if exists('$Dropbox')
-		let $ws = '$Dropbox/Workspace/vim'
-	else
+	if exists('$Dropbox') "try to use $Dropbox/Workspace firstly
+		let $ws = '$Dropbox/Workspace'
+	elseif isdirectory($HOME.'/Workspace') "try to use $HOME/Workspace secondly
+		let $ws = '$HOME/Workspace'
+	else "try to find some place to create /tmpws as backup
 		let $ws = exists('$DESKTOP')? $DESKTOP : $HOME
 		if isdirectory($ws.'/vimws')
 			let $ws = $ws.'/vimws'
@@ -85,8 +87,8 @@ func s:encoding()
 	set termencoding=utf-8
 	"set termencoding=cp936
 	"setglobal bomb
-	set fileencodings=ucs-bom,utf-8,ascii,gb2312,cp936,gb18030,big5,euc-jp,euc-kr,latin1
-	if has('multi_byte') && v:version > 601 |set ambiwidth=double |endif
+	set fileencodings=ucs-bom,ascii,utf-8,gb2312,cp936,gb18030,big5,euc-jp,euc-kr,latin1
+	"if has('multi_byte') && v:version > 601 |set ambiwidth=double |endif "conflict with spacevim
 	if has('win32') || has('win64') |language messages zh_cn.utf-8 |endif
 	"set helplang=zh
 	set fileformat=unix
@@ -212,6 +214,8 @@ func s:plugins()
 		Bundle 'luochen1990/rainbow'
 		Bundle 'luochen1990/indent-detector.vim'
 		Bundle 'luochen1990/select-and-search'
+		"Bundle 'mhinz/vim-startify'
+		Bundle 'ctrlpvim/ctrlp.vim'
 		Bundle 'Shougo/vimproc.vim'
 		Bundle 'Shougo/vimshell.vim'
 		Bundle 'vim-scripts/Conque-Shell'
@@ -232,6 +236,7 @@ func s:plugins()
 		"Bundle 'digitaltoad/vim-jade'
 		"Bundle 'wavded/vim-stylus'
 		"Bundle 'groenewege/vim-less'
+		Bundle 'posva/vim-vue'
 		"Bundle 'wlangstroth/vim-racket'
 		"Bundle 'lambdatoast/elm.vim'
 		"Bundle 'eagletmt/neco-ghc'
@@ -241,6 +246,7 @@ func s:plugins()
 		Bundle 'idris-hackers/idris-vim'
 		"Bundle 'trefis/coquille.git'
 		"Bundle 'let-def/vimbufsync'
+		Bundle 'gu-fan/riv.vim'
 	endfunc
 	if isdirectory($vimconf.'/bundle/vundle')
 		let g:vundle_default_git_proto = 'git'
@@ -278,8 +284,9 @@ func s:plugins()
 	let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
 	let g:syntastic_python_checkers = ['pyflakes']
 	let g:syntastic_python3_checkers = ['pyflakes']
-	let g:ctrlp_map = 'e'
-	nnoremap <s-e> :CtrlPMRUFiles<cr>
+	"let g:ctrlp_map = 'e'
+	nnoremap <s-e> :CtrlPMixed<cr>
+	"nnoremap <s-e> :CtrlPMRUFiles<cr>
 	let g:ctrlp_clear_cache_on_exit = 0
 	let g:ctrlp_mruf_case_sensitive = 0
 	let g:SuperTabNoCompleteAfter = ['\s', ';', '|']
@@ -398,7 +405,7 @@ func s:helpers()
 		update
 		cd %:p:h
 		call CompileRun()
-		cd $ws
+		"cd $ws
 	endfunc
 
 	func Get_selected_text()
@@ -453,7 +460,7 @@ func s:keymap()
 		vnoremap s :s///g<left><left>
 		"noremap \h :tab h<space>
 
-		nnoremap w :update<cr>
+		nnoremap w :set fenc=<cr>:update<cr>
 		nnoremap q :q<cr>
 		nnoremap e :e<space>
 		"nnoremap <s-e> :exec ':e<space>'.expand('$ws')
@@ -541,7 +548,7 @@ func s:keymap()
 		noremap <s-l> e
 		noremap <a-i> :ZoomIn<cr>
 		noremap <a-o> :ZoomOut<cr>
-		nnoremap <cr> <c-]>zz
+		nnoremap <cr> g<c-]>zz
 		nnoremap <bs> <c-o>zz
 	endfunc
 
