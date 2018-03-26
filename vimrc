@@ -15,15 +15,15 @@ func s:general()
 	endfor
 	if exists('$Dropbox') "try to use $Dropbox/Workspace firstly
 		let $ws = '$Dropbox/Workspace'
-	elseif isdirectory($HOME.'/Workspace') "try to use $HOME/Workspace secondly
-		let $ws = '$HOME/Workspace'
+	elseif isdirectory($HOME.'/ws') "try to use $HOME/Workspace secondly
+		let $ws = '$HOME/ws'
 	else "try to find some place to create /tmpws as backup
 		let $ws = exists('$DESKTOP')? $DESKTOP : $HOME
-		if isdirectory($ws.'/vimws')
-			let $ws = $ws.'/vimws'
+		if isdirectory($ws.'/ws')
+			let $ws = $ws.'/ws'
 		elseif exists('*mkdir')
-			call mkdir($ws.'/vimws', 'p')
-			let $ws = $ws.'/vimws'
+			call mkdir($ws.'/ws', 'p')
+			let $ws = $ws.'/ws'
 		endif
 	endif
 
@@ -555,14 +555,14 @@ func s:keymap()
 	func s:clipboard_synchronizing()
 		"set clipboard+=unnamed
 		noremap x "_x
-		nnoremap y "*y
-		nnoremap d "*d
-		nnoremap p "*p
-		nnoremap <s-p> "*<s-p>
-		vnoremap y "*y
-		vnoremap d "*d
-		vnoremap p "*p
-		"inoremap <a-p> <esc>"*p
+		nnoremap y "+y
+		nnoremap d "+d
+		nnoremap p "+p
+		nnoremap <s-p> "+<s-p>
+		vnoremap y "+y
+		vnoremap d "+d
+		vnoremap p "+p
+		"inoremap <a-p> <esc>"+p
 	endfunc
 
 	func s:tab_browsing()
