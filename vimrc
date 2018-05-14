@@ -177,13 +177,16 @@ func s:editor()
 
 	syntax enable
 	"silent! colorscheme desert
-	silent! colorscheme rdark2
+	if has('gui_running')
+		silent! colorscheme rdark2
+	else
+		silent! colorscheme solarized
+	endif
 	"silent! colorscheme wombat256mod
 	"silent! colorscheme grb256
 	"silent! colorscheme codeschool
 	"silent! colorscheme space-vim-dark
 	"set background=light
-	"colorscheme solarized
 	silent! hi Comment cterm=italic
 
 	auto guienter * set cursorline
@@ -210,43 +213,53 @@ func s:editor()
 endfunc
 
 func s:plugins()
-	func s:vundle_conf() "NOTE: comments after Bundle command are not allowed..
-		Bundle 'luochen1990/rainbow'
-		Bundle 'luochen1990/indent-detector.vim'
-		Bundle 'luochen1990/select-and-search'
-		"Bundle 'mhinz/vim-startify'
-		Bundle 'ctrlpvim/ctrlp.vim'
-		Bundle 'Shougo/vimproc.vim'
-		Bundle 'Shougo/vimshell.vim'
-		Bundle 'vim-scripts/Conque-Shell'
-		"Bundle 'liuchengxu/space-vim-dark'
-		"Bundle 'altercation/vim-colors-solarized'
-		"Bundle 'wakatime/vim-wakatime'
-		"Bundle 'rdark'
-		"Bundle 'genindent.vim'
-		Bundle 'ervandew/supertab'
-		"Bundle 'justinmk/vim-sneak'
-		"Bundle 'ap/vim-css-color'
-		"Bundle 'scrooloose/syntastic'
-		Bundle 'scrooloose/nerdtree'
-		Bundle 'Xuyuanp/nerdtree-git-plugin'
-		"Bundle 'python.vim'
-		"Bundle 'davidhalter/jedi-vim'
-		Bundle 'kchmck/vim-coffee-script'
-		"Bundle 'digitaltoad/vim-jade'
-		"Bundle 'wavded/vim-stylus'
-		"Bundle 'groenewege/vim-less'
-		Bundle 'posva/vim-vue'
-		"Bundle 'wlangstroth/vim-racket'
-		"Bundle 'lambdatoast/elm.vim'
-		"Bundle 'eagletmt/neco-ghc'
-		"Bundle 'clausreinke/typescript-tools.vim'
-		"Bundle 'leafgarland/typescript-vim'
-		"Bundle 'raichoo/purescript-vim'
-		Bundle 'idris-hackers/idris-vim'
-		"Bundle 'trefis/coquille.git'
-		"Bundle 'let-def/vimbufsync'
-		Bundle 'gu-fan/riv.vim'
+	func s:vundle_conf()
+		Bundle('luochen1990/rainbow')
+		Bundle('luochen1990/indent-detector.vim')
+		Bundle('luochen1990/select-and-search')
+		Bundle('tpope/vim-fugitive.git')
+		"Bundle('mhinz/vim-startify')
+		Bundle('ctrlpvim/ctrlp.vim')
+		Bundle('Shougo/unite.vim')
+		"Bundle('Shougo/denite.nvim')
+		Bundle('Shougo/vimfiler.vim')
+		Bundle('Shougo/vimproc.vim')
+		Bundle('Shougo/vimshell.vim')
+		Bundle('tpope/vim-vinegar.git')
+		Bundle('vim-scripts/Conque-Shell')
+		"Bundle('liuchengxu/space-vim-dark')
+		"Bundle('altercation/vim-colors-solarized')
+		Bundle('wakatime/vim-wakatime')
+		Bundle('tpope/vim-surround')
+		Bundle('tpope/vim-repeat')
+		"Bundle('rdark')
+		"Bundle('genindent.vim')
+		Bundle('ervandew/supertab')
+		"Bundle('justinmk/vim-sneak')
+		"Bundle('ap/vim-css-color')
+		"Bundle('scrooloose/syntastic')
+		"Bundle('w0rp/ale')
+		"Bundle('python.vim')
+		"Bundle('davidhalter/jedi-vim')
+		Bundle('kchmck/vim-coffee-script')
+		"Bundle('digitaltoad/vim-jade')
+		"Bundle('wavded/vim-stylus')
+		"Bundle('groenewege/vim-less')
+		Bundle('posva/vim-vue')
+		"Bundle('file:///~/Github/vim-haskellConceal')
+		"Bundle('Twinside/vim-haskellConceal')
+		"Bundle('enomsg/vim-haskellConcealPlus')
+		"Bundle('wlangstroth/vim-racket')
+		"Bundle('lambdatoast/elm.vim')
+		"Bundle('eagletmt/neco-ghc')
+		"Bundle('clausreinke/typescript-tools.vim')
+		"Bundle('leafgarland/typescript-vim')
+		"Bundle('raichoo/purescript-vim')
+		Bundle('idris-hackers/idris-vim')
+		"Bundle('trefis/coquille.git')
+		"Bundle('let-def/vimbufsync')
+		Bundle('gu-fan/riv.vim')
+		Bundle('ElmCast/elm-vim.git')
 	endfunc
 	if isdirectory($vimconf.'/bundle/vundle')
 		let g:vundle_default_git_proto = 'git'
@@ -305,11 +318,28 @@ func s:plugins()
 	""let g:jedi#completions_command = "<tab>"
 	"let g:jedi#rename_command = "<leader>r"
 	"let g:jedi#show_call_signatures = "1"
-	"let loaded_nerd_tree=1
-	"let NERDChristmasTree=1
-	"let NERDTreeCaseSensitiveSort=1
-	"let NERDTreeQuitOnOpen=1
-	"nnoremap <silent> <f2> :NERDTree<CR>
+
+	"let g:ale_linters = {
+	"\  'haskell': ['brittany'],
+	"\  'idris': ['idris'],
+	"\  'coffeescript': ['coffee', 'coffeelint'],
+	"\  'javascript': ['eslint', 'flow'],
+	"\  'vue': ['prettier'],
+	"\  'bash': ['shell -n flag'],
+	"\  'sql': ['sqlint'],
+	"\  'yaml': ['yamllint'],
+	"\}
+	"highlight clear ALEErrorSign " otherwise uses error bg color (typically red)
+	"highlight clear ALEWarningSign " otherwise uses error bg color (typically red)
+	let g:ale_sign_error = 'X' " could use emoji
+	let g:ale_sign_warning = '?' " could use emoji
+	let g:ale_statusline_format = ['X %d', '? %d', '']
+	" %linter% is the name of the linter that provided the message
+	" %s is the error or warning message
+	let g:ale_echo_msg_format = '%linter% says %s'
+	" Map keys to navigate between lines with errors and warnings.
+	nnoremap <leader>an :ALENextWrap<cr>
+	nnoremap <leader>ap :ALEPreviousWrap<cr>
 
 	"nmap f <Plug>Sneak_s
 	"nmap F <Plug>Sneak_S
@@ -318,44 +348,20 @@ func s:plugins()
 	"omap f <Plug>Sneak_s
 	"omap F <Plug>Sneak_S
 
-	" Automatically quit vim if NERDTree is last and only buffer
-	autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-	let g:NERDTreeIgnore=['\.pyc','\~$','\.swp']
-	let g:NERDTreeNaturalSort=1
-	let g:NERDTreeQuitOnOpen=1
-	let g:NERDTreeChDirMode=2
-	let g:NERDTreeSortOrder=['\/$', '*']
-	let g:NERDTreeMouseMode=2
-	let g:NERDTreeNotificationThreshold = 500
-	let g:NERDTreeIndicatorMapCustom = {
-		\ "Modified"  : "✹",
-		\ "Staged"	  : "✚",
-		\ "Untracked" : "✭",
-		\ "Renamed"   : "➜",
-		\ "Unmerged"  : "═",
-		\ "Deleted"   : "✖",
-		\ "Dirty"	  : "✗",
-		\ "Clean"	  : "✔︎",
-		\ "Unknown"   : "?"
-		\ }
-
-	"let g:nerdtreeOpened = 0
-	"func ToggleNerdtree()
-	"	if g:nerdtreeOpened == 0
-	"		NERDTree
-	"		echo 0
-	"		let g:nerdtreeOpened = 1
-	"	else
-	"		NERDTreeClose
-	"		echo 1
-	"		let g:nerdtreeOpened = 0
-	"	endif
-	"endfunc
+	let g:vimfiler_as_default_explorer = 1
+	let g:vimfiler_ignore_pattern = ['^\.git$', '^\.DS_Store$', '\.pyc$', '\.swp$']
+	let g:vimfiler_time_format = "%y-%m-%d %H:%M"
+	let g:vimfiler_sort_type = 'T' "NOTE: none|size|extension|filename|time, one char for short, upper case for reverse order
+	"https://github.com/Shougo/vimfiler.vim/blob/e15fdc4b52a3d2e082283362ba041126121739f8/autoload/vimfiler/helper.vim#L238
 endfunc
 
 func s:helpers()
 	func s:expand_rtp(path)
 		let &rtp = join(a:path, ',').','.&rtp.','.join(reverse(map(copy(a:path), 'v:val."/after"')), ',')
+	endfunc
+
+	func Bundle(args) "NOTE: comments after Bundle command are not allowed, so I use this function instead.
+		call vundle#config#bundle(a:args)
 	endfunc
 
 	func Repr(s)
@@ -401,10 +407,10 @@ func s:helpers()
 		exe 'normal! '.join(repeat([locator.a:ia.txt."\x1b"], a:count), 'j')
 	endfunc
 
-	func Compilers()
+	func Compilers(mode)
 		update
 		cd %:p:h
-		call CompileRun()
+		call CompileRun(a:mode)
 		"cd $ws
 	endfunc
 
@@ -431,6 +437,17 @@ func s:helpers()
 		let [tmp, @x] = [@x, a:lp.s.a:rp] |normal! "xp
 		let @x = tmp
 	endfunc
+
+	let g:qfix = 'n'
+	func QFixToggle()
+		if g:qfix == 'n'
+			copen 10
+			let g:qfix = 'y'
+		else
+			cclose
+			let g:qfix = 'n'
+		endif
+	endfunc
 endfunc
 
 func s:keymap()
@@ -439,22 +456,40 @@ func s:keymap()
 		call s:text_browsing()
 		call s:clipboard_synchronizing()
 		call s:mode_switching()
+		call s:search_result_browsing()
+		call s:assistant_panel()
 		call s:parentheses_operations()
 		call s:compiler_invoking()
-		call s:format_adjusting()
 		"call s:tab_browsing()
 		call s:advanced_shotcut()
-		"let NERDTreeWinPos="right"
-		"nnoremap tt :NERDTree<cr>
-		"nnoremap tc :NERDTreeClose<cr>
+	endfunc
+
+	func s:search_result_browsing()
+		nnoremap / :set nohls<cr>0/
+		nnoremap ? :set hls<cr>
+		nnoremap <esc> :set nohls<cr>zz
+		"NOTE: this will do some strange things(enter insert mode and ..) on RHEL when vim enter, so you can use the following one to avoid that
+		"auto guienter * nnoremap <esc> :set nohls<cr>zz
+	endfunc
+
+	func s:assistant_panel()
+		" quickfix
+		nnoremap <c-f> :call QFixToggle()<cr>
+
+		" file explorer
+		nnoremap <c-d> :VimFilerExplorer -force-hide<cr>
+
+		" shell
+		nnoremap <c-g> :VimShellPop -toggle<cr>
+		inoremap <c-g> <esc>:VimShellPop -toggle<cr>
 	endfunc
 
 	func s:basic_operation()
+		map <space> <leader>
 		"nnoremap <f1> :nohl<cr>
 		nnoremap a <s-a>
 		vnoremap <bs> "_x
 		nnoremap <s-u> <c-r>
-		nnoremap / 0/
 		"nnoremap \/ 0/\v
 		"nnoremap s :%s///g<left><left>
 		vnoremap s :s///g<left><left>
@@ -465,10 +500,6 @@ func s:keymap()
 		nnoremap e :e<space>
 		"nnoremap <s-e> :exec ':e<space>'.expand('$ws')
 		"auto bufenter * exec 'nnoremap <s-e> :e<space>'.expand('%:p:h').'/'
-		"nnoremap t :call ToggleNerdtree()<cr>
-		"nnoremap t :NERDTreeToggle<cr>
-		"nnoremap <silent> t :NERDTreeFind<cr>
-		nnoremap <silent> t :NERDTreeFocus<cr>
 	endfunc
 
 	func s:parentheses_operations()
@@ -517,16 +548,33 @@ func s:keymap()
 	endfunc
 
 	func s:compiler_invoking()
-		nnoremap cr :call Compilers()<cr>
-		nnoremap <f9> :call Compilers()<cr>
-		inoremap <f9> <esc>:call Compilers()<cr>
+		"load to repl: 加载当前文件到REPL并启动REPL
+		nnoremap cr :call Compilers('r')<cr>
+
+		"compile and execute: 编译当前文件并执行
+		nnoremap ce :call Compilers('e')<cr>
+
+		"translate: 转译当前文件
+		nnoremap ct :call Compilers('t')<cr>
+
+		"show AST (yacc output): 查看当前文件的抽象语法树
+		nnoremap cy :call Compilers('y')<cr>
+
+		"show high (upper) level IR: 查看当前文件的高级中间表示
+		nnoremap cu :call Compilers('u')<cr>
+
+		"show core IR: 查看当前文件的核心中间表示
+		nnoremap cI :call Compilers('i')<cr>
+
+		"show optmized core IR: 查看当前文件的优化后的核心中间表示
+		nnoremap co :call Compilers('o')<cr>
+
+		"show low level (phisical level) IR: 查看当前文件的底层中间表示 (如ASM, Web ASM, JVM Byte Code)
+		nnoremap cp :call Compilers('p')<cr>
 	endfunc
 
 	func s:text_browsing()
 		"au insertleave,cursormoved * normal! zz
-		nnoremap <esc> :noh<cr>zz
-		"NOTE: this will do some strange things(enter insert mode and ..) on RHEL when vim enter, so you can use the following one to avoid that
-		"auto guienter * nnoremap <esc> :noh<cr>zz
 		noremap j gjzz
 		noremap k gkzz
 		noremap ^ 0
@@ -548,7 +596,8 @@ func s:keymap()
 		noremap <s-l> e
 		noremap <a-i> :ZoomIn<cr>
 		noremap <a-o> :ZoomOut<cr>
-		nnoremap <cr> g<c-]>zz
+		"nnoremap <cr> g<c-]>zz
+		nnoremap <space> g<c-]>zz
 		nnoremap <bs> <c-o>zz
 	endfunc
 
@@ -578,14 +627,6 @@ func s:keymap()
 		"inoremap <c-s-tab> <esc>g<s-t>
 		"nnoremap <c-j> <c-w>j
 		"nnoremap <c-k> <c-w>k
-	endfunc
-
-	func s:format_adjusting()
-		"nnoremap <space> i<space><esc><right>
-		"nnoremap <cr> <s-i><cr><esc>
-		"nnoremap <s-cr> i<cr><esc>
-		"nnoremap <bs> i<bs><esc><right>
-		""inoremap <s-bs> <esc><right>dbi
 	endfunc
 
 	func Start_stop_recording()
