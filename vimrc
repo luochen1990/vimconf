@@ -438,14 +438,13 @@ func s:helpers()
 		let @x = tmp
 	endfunc
 
-	let g:qfix = 'n'
-	func QFixToggle()
-		if g:qfix == 'n'
-			copen 10
-			let g:qfix = 'y'
+	func Toggle(stateVar, enableCmd, disableCmd)
+		if exists(a:stateVar) && eval(a:stateVar) == 'T'
+			exec a:disableCmd
+			exec 'let '.a:stateVar.' = "F"'
 		else
-			cclose
-			let g:qfix = 'n'
+			exec a:enableCmd
+			exec 'let '.a:stateVar.' = "T"'
 		endif
 	endfunc
 endfunc
@@ -474,7 +473,7 @@ func s:keymap()
 
 	func s:assistant_panel()
 		" quickfix
-		nnoremap <c-f> :call QFixToggle()<cr>
+		nnoremap <c-f> :call Toggle('g:qfix', 'copen', 'cclose')<cr>
 
 		" file explorer
 		nnoremap <c-d> :VimFilerExplorer -force-hide<cr>
