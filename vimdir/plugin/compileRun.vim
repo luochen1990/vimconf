@@ -72,11 +72,19 @@ func CompileRun(mode)
 	endif
 
 	if &filetype == 'java'
-		execute "!start cmd /c javac %:p & java -cp %:p:h %:r & pause"
+		if a:mode == 'r'
+			exec 'jshell --startup %'
+		elseif a:mode == 'e'
+			exec "!start cmd /c javac %:p & java -cp %:p:h %:r & pause"
+		endif
 	endif
 
 	if &filetype == 'javascript'
-		exe '!start cmd /k node %:p'
+		if a:mode == 'r'
+			exec '!start cmd /k cat % - | node -i'
+		elseif a:mode == 'e'
+			exec '!start cmd /k node %'
+		endif
 	endif
 
 	if &filetype == 'coffee'
@@ -96,8 +104,14 @@ func CompileRun(mode)
 		elseif a:mode == 't'
 			exec '!start cmd /k decaffeinate % && cat %:r.js'
 		elseif a:mode == 'y'
-			exec '!start cmd /k coffee -n "%"'
+			exec '!start cmd /k coffee --nodes "%"'
+		elseif a:mode == 'u'
+			exec '!start cmd /k coffee --print "%"'
 		elseif a:mode == 'i'
+			exec '!start cmd /k coffee -p "%"'
+		elseif a:mode == 'o'
+			exec '!start cmd /k coffee -p "%"'
+		elseif a:mode == 'p'
 			exec '!start cmd /k coffee -p "%"'
 		endif
 	endif
