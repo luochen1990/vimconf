@@ -225,6 +225,7 @@ func s:plugins()
 		Bundle('Shougo/vimfiler.vim')
 		Bundle('Shougo/vimproc.vim')
 		Bundle('Shougo/vimshell.vim')
+		Plugin('mileszs/ack.vim') "searching tool
 		Bundle('tpope/vim-vinegar.git')
 		Bundle('vim-scripts/Conque-Shell')
 		"Bundle('liuchengxu/space-vim-dark')
@@ -353,6 +354,9 @@ func s:plugins()
 	let g:vimfiler_time_format = "%y-%m-%d %H:%M"
 	let g:vimfiler_sort_type = 'T' "NOTE: none|size|extension|filename|time, one char for short, upper case for reverse order
 	"https://github.com/Shougo/vimfiler.vim/blob/e15fdc4b52a3d2e082283362ba041126121739f8/autoload/vimfiler/helper.vim#L238
+
+	let g:ackprg = 'ag --vimgrep'
+	"let g:ackprg = 'ag --nogroup --nocolor --column'
 endfunc
 
 func s:helpers()
@@ -361,6 +365,9 @@ func s:helpers()
 	endfunc
 
 	func Bundle(args) "NOTE: comments after Bundle command are not allowed, so I use this function instead.
+		call vundle#config#bundle(a:args)
+	endfunc
+	func Plugin(args) "NOTE: comments after Bundle command are not allowed, so I use this function instead.
 		call vundle#config#bundle(a:args)
 	endfunc
 
@@ -441,15 +448,17 @@ func s:helpers()
 	func Toggle(stateVar, enableCmd, disableCmd)
 		if exists(a:stateVar) && eval(a:stateVar) == 'T'
 			exec a:disableCmd
-			exec 'let '.a:stateVar.' = "F"'
+			exec 'let' a:stateVar '= "F"'
 		else
 			exec a:enableCmd
-			exec 'let '.a:stateVar.' = "T"'
+			exec 'let' a:stateVar '= "T"'
 		endif
 	endfunc
 endfunc
 
 func s:keymap()
+	let mapleader = ","
+
 	func s:keymap_init()
 		call s:basic_operation()
 		call s:text_browsing()
@@ -464,8 +473,9 @@ func s:keymap()
 	endfunc
 
 	func s:search_result_browsing()
-		nnoremap / :set nohls<cr>0/
-		nnoremap ? :set hls<cr>
+		"nnoremap / :set nohls<cr>0/
+		nnoremap / :set hls<cr>0/
+		"nnoremap ? :set hls<cr>
 		nnoremap <esc> :set nohls<cr>zz
 		"NOTE: this will do some strange things(enter insert mode and ..) on RHEL when vim enter, so you can use the following one to avoid that
 		"auto guienter * nnoremap <esc> :set nohls<cr>zz
@@ -473,14 +483,19 @@ func s:keymap()
 
 	func s:assistant_panel()
 		" quickfix
-		nnoremap <c-f> :call Toggle('g:qfix', 'copen', 'cclose')<cr>
+		nnoremap <c-f> :call Toggle('g:qfix', "copen\n normal! zz", 'cclose')<cr>
+		nnoremap f :call Toggle('g:qfix', "copen\n normal! zz", 'cclose')<cr>
 
 		" file explorer
 		nnoremap <c-d> :VimFilerExplorer -force-hide<cr>
+		nnoremap t :VimFilerExplorer -force-hide<cr>
 
 		" shell
 		nnoremap <c-g> :VimShellPop -toggle<cr>
 		inoremap <c-g> <esc>:VimShellPop -toggle<cr>
+
+		" switch between panels
+		nnoremap ; <c-w><c-w>
 	endfunc
 
 	func s:basic_operation()
