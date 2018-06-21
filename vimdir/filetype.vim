@@ -5,4 +5,4 @@ au bufnewfile,bufread *.{lit,}coffee set filetype=coffee
 au bufnewfile,bufread *.jade set filetype=jade
 au bufnewfile,bufread *.styl{,us} set filetype=stylus
 au bufnewfile,bufread *.idr set filetype=idris
-
+au bufnewfile,bufread *.csv set filetype=csv

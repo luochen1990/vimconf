@@ -1,24 +1,30 @@
 func CompileRun(mode)
 	if &filetype == 'cpp'
-		if match(getline(1) , '//vc') != -1
-			let vcpath = 'f:\desktop\vc2010'
-			"let vcpath = expand('$vc')
-			let vcload = 'd:\appfordevelop\vs10\common7\tools\vsvars32.bat'
-			exec '!start cmd /c '.vcload.' & cl %:p & %:p:r.exe & del %:p:r.obj & pause'
-		elseif match(getline(1) , '//c++11') != -1
-			let out = '%:p:h\out'
-			let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
-			execute '!start cmd /c g++ %:p -Wall -D__NO_INLINE__ -Wno-unused -O2 -std=c++11 -o '.out.' & '.run.' & pause'
-			"execute '!start cmd /c g++ %:p -Wall -Wno-unused -O2 -lboost_coroutine -std=c++11 -o '.out.' & '.run.' & pause'
-			"g++ Test.cpp -o Test -Wall -O2 -lboost_coroutine -std=c++11
-		elseif match(getline(1) , '//c++14') != -1
-			let out = '%:p:h\out'
-			let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
-			execute '!start cmd /c g++ %:p -Wall -D__NO_INLINE__ -Wno-unused -O2 -std=c++14 -o '.out.' & '.run.' & pause'
-		else
-			let out = '%:p:h\out'
-			let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
-			execute '!start cmd /c g++ %:p -Wall -Wno-unused -std=c++98 -o '.out.' & '.run.' & pause'
+		if a:mode == 'e' || a:mode == 'r'
+			if match(getline(1) , '//vc') != -1
+				let vcpath = 'f:\desktop\vc2010'
+				"let vcpath = expand('$vc')
+				let vcload = 'd:\appfordevelop\vs10\common7\tools\vsvars32.bat'
+				exec '!start cmd /c '.vcload.' & cl %:p & %:p:r.exe & del %:p:r.obj & pause'
+			elseif match(getline(1) , '//c++11') != -1
+				let out = '%:p:h\out'
+				let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
+				execute '!start cmd /c g++ %:p -Wall -D__NO_INLINE__ -Wno-unused -O2 -std=c++11 -o '.out.' & '.run.' & pause'
+				"execute '!start cmd /c g++ %:p -Wall -Wno-unused -O2 -lboost_coroutine -std=c++11 -o '.out.' & '.run.' & pause'
+				"g++ Test.cpp -o Test -Wall -O2 -lboost_coroutine -std=c++11
+			elseif match(getline(1) , '//c++14') != -1
+				let out = '%:p:h\out'
+				let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
+				execute '!start cmd /c g++ %:p -Wall -D__NO_INLINE__ -Wno-unused -O2 -std=c++14 -o '.out.' & '.run.' & pause'
+			else
+				let out = '%:p:h\out'
+				let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
+				execute '!start cmd /c g++ %:p -Wall -Wno-unused -std=c++98 -o '.out.' & '.run.' & pause'
+			endif
+		elseif a:mode == 'o' || a:mode == 'p'
+			execute '!start cmd /c g++ %:p -Wall -D__NO_INLINE__ -Wno-unused -O2 -std=c++14 -S & cat %:r.s & pause'
+		elseif a:mode == 'y'
+			execute '!start cmd /c g++ %:p -Wall -D__NO_INLINE__ -Wno-unused -O2 -std=c++14 -E & pause'
 		endif
 	endif
 	
@@ -73,7 +79,7 @@ func CompileRun(mode)
 
 	if &filetype == 'java'
 		if a:mode == 'r'
-			exec 'jshell --startup %'
+			exec '!start cmd /c jshell --startup %'
 		elseif a:mode == 'e'
 			exec "!start cmd /c javac %:p & java -cp %:p:h %:r & pause"
 		endif
@@ -130,7 +136,7 @@ func CompileRun(mode)
 
 	if &filetype == 'haskell' || &filetype == 'lhaskell'
 		if a:mode == 'r'
-			exec '!start stack exec -- ghci "%"'
+			exec '!start stack exec -- ghci -i../src:../../src:../../../src "%"'
 		elseif a:mode == 'e'
 			"let output = system("ghc -H100M -O3 -Wall -prof -auto-all -rtsopts -o out +RTS -K1G -M2G -RTS ".expand("%:p")) " -fforce-recomp
 			let output = system("stack exec -- ghc -H100M -O3 -rtsopts -o out +RTS -K1G -M2G -RTS ".expand("%"))

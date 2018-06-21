@@ -30,6 +30,7 @@ hi Normal guifg=#babdb6 guibg=#303336
 hi NonText guifg=#303336 guibg=#303336 gui=none
 hi Cursor guibg=#babdb6
 hi ICursor guibg=#babdb6
+hi Conceal guifg=#eeeeec guibg=#303336
 
 " Search
 hi Search guifg=#2e3436 guibg=#fcaf3e
@@ -112,11 +113,11 @@ hi javaScriptBraces guifg=#888a85
 hi javaScriptOperator guifg=#888a85
 
 " HTML
-hi htmlTag guifg=#888a85
-hi htmlEndTag guifg=#888a85
-hi htmlTagName guifg=#babdb6
-hi htmlSpecialTagName guifg=#babdb6
-hi htmlArg guifg=#d3d7cf
+hi htmlTag guifg=#9abdd6
+hi htmlEndTag guifg=#7a9db6
+hi htmlTagName guifg=#baddf6 gui=bold
+hi htmlSpecialTagName guifg=#cafdb6 gui=bold
+hi htmlArg guifg=#9abdd6
 hi htmlTitle guifg=#8ae234 gui=none
 hi link htmlH1 htmlTitle
 hi link htmlH2 htmlH1
@@ -129,6 +130,12 @@ hi link htmlH6 htmlH1
 hi link xmlTag htmlTag
 hi link xmlEndTag htmlEndTag
 hi link xmlAttrib htmlArg
+hi link xmlTagName htmlTagName
+"hi xmlTagName guifg=#59ACF5
+"hi xmlTag guifg=#59ACF5
+"hi xmlEndTag guifg=#2974a1
+
+hi jsxAttributeBraces gui=bold guifg=#585a55
 
 " CSS
 hi cssSelectorOp guifg=#eeeeec
