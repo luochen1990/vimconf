@@ -4,11 +4,12 @@ func s:init()
 	call s:general()
 	call s:font()
 	call s:editor()
-	call s:plugins()
 	call s:keymap()
+	call s:plugins()
 endfunc
 
 func s:general()
+	"let g:sh_no_error = 1
 	let dropbox_candidates = [expand('~/Dropbox'), 'D:/Dropbox']
 	for d in dropbox_candidates
 		if !exists('$Dropbox') && isdirectory(d) |let $Dropbox = d |endif
@@ -56,7 +57,7 @@ func s:general()
 		if stridx(&guioptions, 'm') >= 0 |set langmenu=zh_cn.utf-8 |source $vimruntime/delmenu.vim |source $vimruntime/menu.vim |endif
 		"set guitablabel=%N\ %f
 		if has('mouse')
-			set mouse=a mousefocus mousemodel=extend
+			set mouse=a mousefocus mousemodel=popup_setpos
 		endif
 		if has('gui_running') "has('win32') || has('win64')
 			"auto guienter * silent! call libcallnr("vimtweak.dll", 'SetAlpha', 220)
@@ -72,6 +73,7 @@ func s:general()
 		set showmatch matchtime=2
 	endif
 
+	"set shell=bash
 	"augroup NO_CURSOR_MOVE_ON_FOCUS
 	"	au!
 	"	au FocusLost * let g:oldmouse=&mouse | set mouse=
@@ -88,7 +90,7 @@ func s:encoding()
 	"set termencoding=cp936
 	"setglobal bomb
 	set fileencodings=ucs-bom,ascii,utf-8,gb2312,cp936,gb18030,big5,euc-jp,euc-kr,latin1
-	"if has('multi_byte') && v:version > 601 |set ambiwidth=double |endif "conflict with spacevim
+	if has('multi_byte') && v:version > 601 |set ambiwidth=double |endif "conflict with spacevim
 	if has('win32') || has('win64') |language messages zh_cn.utf-8 |endif
 	"set helplang=zh
 	set fileformat=unix
@@ -176,25 +178,27 @@ func s:editor()
 	filetype plugin indent on
 
 	syntax enable
+	set background=dark
+	"silent! colorscheme soladark
+	let g:solarized_contrast = "high"
+	let g:solarized_degrade = 1
+	silent! colorscheme solarized
+	silent! colorscheme rdark2
+	"silent! colorscheme codeschool
 	"silent! colorscheme desert
-	if has('gui_running')
-		silent! colorscheme rdark2
-	else
-		silent! colorscheme solarized
-	endif
 	"silent! colorscheme wombat256mod
 	"silent! colorscheme grb256
-	"silent! colorscheme codeschool
 	"silent! colorscheme space-vim-dark
-	"set background=light
 	silent! hi Comment cterm=italic
 
 	auto guienter * set cursorline
 	set number showmode showcmd ruler
 	"if v:version >= 704 |set relativenumber |endif
 
-	"set spell spelllang=en_us
-	auto bufenter * syntax spell notoplevel
+	set spelllang=en_us,cjk
+	set nospell
+	"auto bufenter * syntax spell notoplevel
+
 	set nowrapscan incsearch hlsearch
 
 	set virtualedit=block
@@ -213,64 +217,63 @@ func s:editor()
 endfunc
 
 func s:plugins()
-	func s:vundle_conf()
-		Bundle('luochen1990/rainbow')
-		Bundle('luochen1990/indent-detector.vim')
-		Bundle('luochen1990/select-and-search')
-		Bundle('tpope/vim-fugitive.git')
-		"Bundle('mhinz/vim-startify')
-		Bundle('ctrlpvim/ctrlp.vim')
-		Bundle('Shougo/unite.vim')
-		"Bundle('Shougo/denite.nvim')
-		Bundle('Shougo/vimfiler.vim')
-		Bundle('Shougo/vimproc.vim')
-		Bundle('Shougo/vimshell.vim')
-		Plugin('mileszs/ack.vim') "searching tool
-		Bundle('tpope/vim-vinegar.git')
-		Bundle('vim-scripts/Conque-Shell')
-		"Bundle('liuchengxu/space-vim-dark')
-		"Bundle('altercation/vim-colors-solarized')
-		Bundle('wakatime/vim-wakatime')
-		Bundle('tpope/vim-surround')
-		Bundle('tpope/vim-repeat')
-		"Bundle('rdark')
-		"Bundle('genindent.vim')
-		Bundle('ervandew/supertab')
-		"Bundle('justinmk/vim-sneak')
-		"Bundle('ap/vim-css-color')
-		"Bundle('scrooloose/syntastic')
-		"Bundle('w0rp/ale')
-		"Bundle('python.vim')
-		"Bundle('davidhalter/jedi-vim')
-		Bundle('kchmck/vim-coffee-script')
-		"Bundle('digitaltoad/vim-jade')
-		"Bundle('wavded/vim-stylus')
-		"Bundle('groenewege/vim-less')
-		Bundle('posva/vim-vue')
-		"Bundle('file:///~/Github/vim-haskellConceal')
-		"Bundle('Twinside/vim-haskellConceal')
-		"Bundle('enomsg/vim-haskellConcealPlus')
-		"Bundle('wlangstroth/vim-racket')
-		"Bundle('lambdatoast/elm.vim')
-		"Bundle('eagletmt/neco-ghc')
-		"Bundle('clausreinke/typescript-tools.vim')
-		"Bundle('leafgarland/typescript-vim')
-		"Bundle('raichoo/purescript-vim')
-		Bundle('idris-hackers/idris-vim')
-		"Bundle('trefis/coquille.git')
-		"Bundle('let-def/vimbufsync')
-		Bundle('gu-fan/riv.vim')
-		Bundle('ElmCast/elm-vim.git')
+	func s:register_plugins()
+		Plug 'luochen1990/rainbow'
+		Plug 'luochen1990/indent-detector.vim'
+		Plug 'luochen1990/select-and-search'
+		Plug 'tpope/vim-fugitive'
+		"Plug 'mhinz/vim-startify'
+		Plug 'ctrlpvim/ctrlp.vim'
+		Plug 'Shougo/unite.vim'
+		"Plug 'Shougo/denite.nvim'
+		Plug 'Shougo/vimfiler.vim'
+		Plug 'Shougo/vimproc.vim'
+		Plug 'Shougo/vimshell.vim'
+		Plug 'mileszs/ack.vim' "searching tool
+		Plug 'tpope/vim-vinegar'
+		Plug 'vim-scripts/Conque-Shell'
+		"https://microsoft.github.io/language-server-protocol/implementors/tools/
+		Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'}
+		"(Optional) Multi-entry selection UI.
+		"Plug 'junegunn/fzf'
+		"Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
+
+		"Plug 'liuchengxu/space-vim-dark'
+		"Plug 'altercation/vim-colors-solarized'
+		Plug 'wakatime/vim-wakatime'
+		Plug 'tpope/vim-surround'
+		Plug 'tpope/vim-repeat'
+		"Plug 'rdark'
+		"Plug 'genindent.vim'
+		Plug 'ervandew/supertab'
+		"Plug 'justinmk/vim-sneak'
+		Plug 'ap/vim-css-color'
+		"Plug 'w0rp/ale'
+		"Plug 'python.vim', {'for': 'python'}
+		"Plug 'davidhalter/jedi-vim', {'for': 'python'}
+		Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
+		Plug 'digitaltoad/vim-jade', {'for': 'jade'}
+		Plug 'wavded/vim-stylus', {'for': 'stylus'}
+		Plug 'groenewege/vim-less', {'for': 'less'}
+		Plug 'posva/vim-vue', {'for': 'vue'}
+		"Plug 'file:///~/Github/vim-haskellConceal'
+		"Plug 'Twinside/vim-haskellConceal', {'for': 'haskell'}
+		"Plug 'enomsg/vim-haskellConcealPlus', {'for': 'haskell'}
+		Plug 'wlangstroth/vim-racket', {'for': 'racket'}
+		"Plug 'lambdatoast/elm.vim'
+		"Plug 'eagletmt/neco-ghc'
+		"Plug 'raichoo/purescript-vim', {'for': 'purescript'}
+		Plug 'idris-hackers/idris-vim', {'for': 'idris'}
+		"Plug 'trefis/coquille.git'
+		"Plug 'let-def/vimbufsync'
+		"Plug 'gu-fan/riv.vim'
+		Plug 'ElmCast/elm-vim', {'for': 'elm'}
+		"Plug 'tasn/vim-tsx'
+		Plug 'leafgarland/typescript-vim', {'for': 'typescript'}
+		Plug 'peitalin/vim-jsx-typescript', {'for': 'typescript'}
+		Plug 'pangloss/vim-javascript', {'for': 'javascript'}
+		"Plug 'roxma/nvim-completion-manager'
 	endfunc
-	if isdirectory($vimconf.'/bundle/vundle')
-		let g:vundle_default_git_proto = 'git'
-		filetype off
-		set rtp+=$vimconf/bundle/vundle/
-		call vundle#rc($vimconf.'/bundle')
-		Bundle 'gmarik/vundle'
-		call s:vundle_conf()
-		filetype plugin indent on
-	endif
 
 	func s:init_coq_ide()
 		silent CoqLaunch
@@ -280,17 +283,54 @@ func s:plugins()
 	endfunc
 	au FileType coq call s:init_coq_ide()
 
+	set completefunc=LanguageClient#complete
+	set formatexpr=LanguageClient#textDocument_rangeFormatting_sync()
+	set conceallevel=1
+	let g:javascript_conceal_function             = "ƒ"
+	let g:javascript_conceal_null                 = "␀"
+	let g:javascript_conceal_this                 = "@"
+	let g:javascript_conceal_return               = "⇚"
+	let g:javascript_conceal_undefined            = "¿"
+	"let g:javascript_conceal_NaN                  = "ฑ"
+	"let g:javascript_conceal_prototype            = "¶"
+	let g:javascript_conceal_static               = "•"
+	"let g:javascript_conceal_super                = "Ω"
+	let g:javascript_conceal_arrow_function       = "⇒"
+	"let g:javascript_conceal_noarg_arrow_function = "🞅"
+	"let g:javascript_conceal_underscore_arrow_function = "🞅"
+
+	set hidden
+	let g:LanguageClient_serverCommands = {
+	\	'haskell': ['hie-wrapper', '--lsp', '-r', 'C:\dev\stack\stack_root\global-project'],
+	\}
+	let g:LanguageClient_changeThrottle = 2 "second
+	"let g:LanguageClient_windowLogMessageLevel = "Error"  " Error | Warning | Info | Log
+	let g:LanguageClient_rootMarkers = ['.git*', 'package.*', 'readme*', 'license*']
+
+	nnoremap <silent> gd :call LanguageClient#textDocument_definition()<cr>
+	nnoremap <silent> gr :call LanguageClient#textDocument_references()<cr>
+	nnoremap <silent> gt :call LanguageClient#textDocument_typeDefinition()<cr>
+	nnoremap <silent> gi :call LanguageClient#textDocument_implementation()<cr>
+	nnoremap <silent> gm :call LanguageClient_contextMenu()<cr>
+	nnoremap <silent> gh :call LanguageClient#textDocument_hover()<cr>
+	nnoremap <silent> gn :call LanguageClient#textDocument_rename()<cr>
+
 	let g:vimshell_prompt = '$ '
 	let g:mystatusline_activated = 1
 	let g:rainbow_active = 1
 	let g:rainbow_conf = {
+	\	'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick'],
+	\	'ctermfgs': ['lightblue', 'lightyellow', 'lightcyan', 'lightmagenta'],
+	\	'operators': '_,_',
+	\	'parentheses': map(['start=/(/ end=/)/', 'start=/\[/ end=/\]/', 'start=/{/ end=/}/'], 'v:val." fold"'),
 	\	'separately': {
-	\		'stylus': {
-	\			'parentheses': ['start=/{/ end=/}/ fold contains=@colorableGroup'],
+	\		'csv': {
+	\			'parentheses': ['start=/\v[^,]+/ step=/\v\,/ end=/$/ keepend', 'start=/\v(,\ze,)/ end=/$/ keepend'],
 	\		},
 	\		'coq': 0,
 	\	}
 	\}
+
 	let g:syntastic_javascript_checkers = ['eslint']
 	let g:syntastic_always_populate_loc_list = 1
 	let g:select_and_search_active = 2
@@ -357,18 +397,15 @@ func s:plugins()
 
 	let g:ackprg = 'ag --vimgrep'
 	"let g:ackprg = 'ag --nogroup --nocolor --column'
+
+	call plug#begin($vimconf.'/bundle')
+	call s:register_plugins()
+	call plug#end()
 endfunc
 
 func s:helpers()
 	func s:expand_rtp(path)
 		let &rtp = join(a:path, ',').','.&rtp.','.join(reverse(map(copy(a:path), 'v:val."/after"')), ',')
-	endfunc
-
-	func Bundle(args) "NOTE: comments after Bundle command are not allowed, so I use this function instead.
-		call vundle#config#bundle(a:args)
-	endfunc
-	func Plugin(args) "NOTE: comments after Bundle command are not allowed, so I use this function instead.
-		call vundle#config#bundle(a:args)
 	endfunc
 
 	func Repr(s)
@@ -470,21 +507,31 @@ func s:keymap()
 		call s:compiler_invoking()
 		"call s:tab_browsing()
 		call s:advanced_shotcut()
+		call s:structural_editing()
+	endfunc
+
+	func s:structural_editing()
 	endfunc
 
 	func s:search_result_browsing()
-		"nnoremap / :set nohls<cr>0/
-		nnoremap / :set hls<cr>0/
 		"nnoremap ? :set hls<cr>
-		nnoremap <esc> :set nohls<cr>zz
-		"NOTE: this will do some strange things(enter insert mode and ..) on RHEL when vim enter, so you can use the following one to avoid that
-		"auto guienter * nnoremap <esc> :set nohls<cr>zz
+		"nnoremap / :set nohls<cr>0/
+		nnoremap / 0/\v
+
+		if has('gui_running') "NOTE: https://stackoverflow.com/questions/3691247/mapping-nohlsearch-to-escape-key
+			nnoremap <silent> <esc> :noh<cr>zz
+		else
+			nnoremap <silent> <esc><esc> :noh<cr>zz<esc>
+		endif
 	endfunc
 
 	func s:assistant_panel()
 		" quickfix
 		nnoremap <c-f> :call Toggle('g:qfix', "copen\n normal! zz", 'cclose')<cr>
-		nnoremap f :call Toggle('g:qfix', "copen\n normal! zz", 'cclose')<cr>
+		nnoremap <silent> f :call Toggle('g:qfix', "copen\n normal! zz", 'cclose')<cr>
+
+		auto bufreadpost quickfix nnoremap <buffer> <silent> q :call Toggle('g:qfix', "copen\n normal! zz", 'cclose')<cr>
+		auto bufreadpost quickfix nnoremap <buffer> <silent> <cr> <cr>:call Toggle('g:qfix', "copen\n normal! zz", 'cclose')<cr>
 
 		" file explorer
 		nnoremap <c-d> :VimFilerExplorer -force-hide<cr>
@@ -556,9 +603,11 @@ func s:keymap()
 		\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
 		\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">")<cr>
 		nnoremap <f3> :echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')<cr>
+		nnoremap <f4> :exec 'syn list '.synIDattr(synID(line('.'), col('.'), 0), 'name')<cr>
 		nnoremap <f10> :call pep8#adjust_format()<cr>
 		"nnoremap <leader>m :%s/<c-v><cr>//ge<cr>'tzt'm
-		command Diff :call Tabmerge('r') | diffthis | exec "normal! <c-w><c-w>" | diffthis
+		command Diff :call Tabmerge('r') | diffthis | let &cursorline = 0 | exec "normal! <c-w><c-w>" | diffthis | let &cursorline = 0
+		command -nargs=1 SelectColumn :let @/ = '\v^\s*(\S+\s+){'.<args>.'}\zs\S+'|set hls
 	endfunc
 
 	func s:compiler_invoking()
@@ -610,8 +659,8 @@ func s:keymap()
 		noremap <s-l> e
 		noremap <a-i> :ZoomIn<cr>
 		noremap <a-o> :ZoomOut<cr>
-		"nnoremap <cr> g<c-]>zz
-		nnoremap <space> g<c-]>zz
+		"nnoremap <space> g<c-]>zz
+		nnoremap <cr> g<c-]>zz
 		nnoremap <bs> <c-o>zz
 	endfunc
 
