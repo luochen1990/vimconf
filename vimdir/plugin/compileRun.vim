@@ -163,15 +163,17 @@ func CompileRun(mode)
 
 	if &filetype == 'idris' || &filetype == 'lidris'
 		if a:mode == 'r'
-			exe '!start cmd /c idris -p contrib -p effects -p lightyear -p prelude -p pruviloj "%"'
+			exe '!start cmd /c idris -p contrib -p effects -p prelude -p pruviloj -p lightyear -p idrisscript "%"'
 		elseif a:mode == 'e'
-			let output = system("idris -p contrib -p effects -p lightyear -p prelude -p pruviloj -o out ".expand("%:p"))
+			let output = system("idris -p contrib -p effects -p prelude -p pruviloj -p lightyear -p idrisscript -o out ".expand("%:p"))
 			if v:shell_error == 0
 				"call system("del ".expand("%:p:r").".hi ".expand("%:p:r").".o")
 				exec "!start cmd /c out && pause"
 			else
 				echo output
 			endif
+		elseif a:mode == 't'
+			exe '!start cmd /c rm -f "%:r.js" & idris -p contrib -p effects -p prelude -p pruviloj -p lightyear -p idrisscript --codegen node "%" -o "%:r.js" & cat "%:r.js" & pause'
 		endif
 	endif
 
