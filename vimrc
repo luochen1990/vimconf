@@ -178,18 +178,19 @@ func s:editor()
 	filetype plugin indent on
 
 	syntax enable
-	set background=dark
+	set background=light
 	"silent! colorscheme soladark
 	let g:solarized_contrast = "high"
-	let g:solarized_degrade = 1
+	let g:solarized_degrade = 9
 	silent! colorscheme solarized
-	silent! colorscheme rdark2
+	"silent! colorscheme rdark2
 	"silent! colorscheme codeschool
 	"silent! colorscheme desert
 	"silent! colorscheme wombat256mod
 	"silent! colorscheme grb256
 	"silent! colorscheme space-vim-dark
 	silent! hi Comment cterm=italic
+	silent! hi! link hsString hsNumber
 
 	auto guienter * set cursorline
 	set number showmode showcmd ruler
@@ -301,7 +302,7 @@ func s:plugins()
 
 	set hidden
 	let g:LanguageClient_serverCommands = {
-	\	'haskell': ['hie-wrapper', '--lsp', '-r', 'C:\dev\stack\stack_root\global-project'],
+	\	'haskell': ['hie-wrapper', '--lsp'],
 	\}
 	let g:LanguageClient_changeThrottle = 2 "second
 	"let g:LanguageClient_windowLogMessageLevel = "Error"  " Error | Warning | Info | Log
@@ -320,7 +321,7 @@ func s:plugins()
 	let g:rainbow_active = 1
 	let g:rainbow_conf = {
 	\	'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick'],
-	\	'ctermfgs': ['lightblue', 'lightyellow', 'lightcyan', 'lightmagenta'],
+	\	'ctermfgs': ['darkblue', 'darkyellow', 'darkcyan', 'darkmagenta'],
 	\	'operators': '_,_',
 	\	'parentheses': map(['start=/(/ end=/)/', 'start=/\[/ end=/\]/', 'start=/{/ end=/}/'], 'v:val." fold"'),
 	\	'separately': {
@@ -343,7 +344,7 @@ func s:plugins()
 	"nnoremap <s-e> :CtrlPMRUFiles<cr>
 	let g:ctrlp_clear_cache_on_exit = 0
 	let g:ctrlp_mruf_case_sensitive = 0
-	let g:SuperTabNoCompleteAfter = ['\s', ';', '|']
+	let g:SuperTabNoCompleteAfter = ['^', '\s', ';', '|', ',']
 	let g:SuperTabCrMapping = 0
 	let g:purescript_indent_if = 4
 	let g:purescript_indent_case = 4
