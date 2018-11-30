@@ -19,7 +19,7 @@ if exists("syntax_on")
 	syntax reset
 endif
 
-let colors_name = "rdark"
+let colors_name = "rdark2"
 
 " Current Line
 hi CursorLine guibg=#292f31

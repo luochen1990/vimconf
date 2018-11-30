@@ -182,8 +182,8 @@ func s:editor()
 	"silent! colorscheme soladark
 	let g:solarized_contrast = "high"
 	let g:solarized_degrade = 9
-	silent! colorscheme solarized
-	"silent! colorscheme rdark2
+	"silent! colorscheme solarized
+	silent! colorscheme rdark2
 	"silent! colorscheme codeschool
 	"silent! colorscheme desert
 	"silent! colorscheme wombat256mod
