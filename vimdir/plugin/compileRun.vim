@@ -69,11 +69,15 @@ func CompileRun(mode)
 	endif
 
 	if &filetype == 'markdown'
-		if search('\n\n----\?\n\n', 'wn', 0, 50) == 0 "no horizentol or vertical bar
-			exe 'silent !start chrome --allow-file-access-from-files --Incognito %:p'
-		else
-			exe '!start cmd /c reveal-md -w "%"'
-			"exe 'silent !start reveal-md %:p' "this not available, not sure why.
+		if a:mode == 'r'
+			if search('\n\n----\?\n\n', 'wn', 0, 50) == 0 "no horizentol or vertical bar
+				exe 'silent !start chrome --allow-file-access-from-files --Incognito %:p'
+			else
+				exe '!start cmd /c reveal-md -w "%"'
+				"exe 'silent !start reveal-md %:p' "this not available, not sure why.
+			endif
+		elseif a:mode == 'e'
+			exec '!start cmd /c mdpdf "%" & pause'
 		endif
 	endif
 
@@ -108,7 +112,7 @@ func CompileRun(mode)
 		elseif a:mode == 'e'
 			exec '!start cmd /k coffee %'
 		elseif a:mode == 't'
-			exec '!start cmd /k decaffeinate % && cat %:r.js'
+			exec '!start cmd /k decaffeinate --use-cs2 --use-optional-chaining --loose --disable-suggestion-comment  % && cat %:r.js'
 		elseif a:mode == 'y'
 			exec '!start cmd /k coffee --nodes "%"'
 		elseif a:mode == 'u'
@@ -174,6 +178,36 @@ func CompileRun(mode)
 			endif
 		elseif a:mode == 't'
 			exe '!start cmd /c rm -f "%:r.js" & idris -p contrib -p effects -p prelude -p pruviloj -p lightyear -p idrisscript --codegen node "%" -o "%:r.js" & cat "%:r.js" & pause'
+		endif
+	endif
+
+	if &filetype == 'purescript'
+		cd %:p:h
+		while !filereadable('./psc-package.json')
+			cd ..
+		endwhile
+		if a:mode == 'r'
+			if match(expand('%'), '^src') >= 0 "under src/ dir
+				exe '!start cmd /c psc-package repl & pause'
+			else
+				if match(expand('%:t'), '\.test\.purs$') >= 0 "is test file
+					exe '!start cmd /c psc-package repl "%:r:r.purs" "%" & pause'
+				else
+					exe '!start cmd /c psc-package repl "%" & pause'
+				endif
+			endif
+		elseif a:mode == 'e'
+			exe '!start cmd /c purs repl "%" & pause'
+		elseif a:mode == 't'
+			exe '!start cmd /c purs compile "%" & pause'
+		endif
+	endif
+
+	if &filetype == 'rust'
+		if a:mode == 'r'
+			exec '!start cmd /c rustc % & pause'
+		elseif a:mode == 'e'
+			exec '!start cmd /c rustc % & pause'
 		endif
 	endif
 

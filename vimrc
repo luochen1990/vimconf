@@ -90,7 +90,6 @@ func s:encoding()
 	"set termencoding=cp936
 	"setglobal bomb
 	set fileencodings=ucs-bom,ascii,utf-8,gb2312,cp936,gb18030,big5,euc-jp,euc-kr,latin1
-	if has('multi_byte') && v:version > 601 |set ambiwidth=double |endif "conflict with spacevim
 	if has('win32') || has('win64') |language messages zh_cn.utf-8 |endif
 	"set helplang=zh
 	set fileformat=unix
@@ -157,6 +156,7 @@ func s:font()
 		if has('directx')
 			set guifont=Source\ Code\ Pro:h14
 			set rop=type:directx,gamma:1.0,contrast:0.5,level:1,geom:1,renmode:4,taamode:1
+			if has('multi_byte') && v:version > 601 |set ambiwidth=single |endif
 		elseif has("gui_gtk2")
 			set guifont=Courier\ 10\ Pitch\ 16
 		elseif has("x11")
@@ -233,11 +233,12 @@ func s:plugins()
 		Plug 'mileszs/ack.vim' "searching tool
 		Plug 'tpope/vim-vinegar'
 		Plug 'vim-scripts/Conque-Shell'
+
 		"https://microsoft.github.io/language-server-protocol/implementors/tools/
 		Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'}
 		"(Optional) Multi-entry selection UI.
-		"Plug 'junegunn/fzf'
-		"Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
+		Plug 'junegunn/fzf'
+		Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
 
 		"Plug 'liuchengxu/space-vim-dark'
 		"Plug 'altercation/vim-colors-solarized'
@@ -272,8 +273,11 @@ func s:plugins()
 		"Plug 'tasn/vim-tsx'
 		Plug 'leafgarland/typescript-vim', {'for': 'typescript'}
 		Plug 'peitalin/vim-jsx-typescript', {'for': 'typescript'}
-		Plug 'pangloss/vim-javascript', {'for': 'javascript'}
+		Plug 'pangloss/vim-javascript' ", {'for': 'javascript'}
+		Plug 'mxw/vim-jsx', {'for': 'javascript'}
+		Plug 'purescript-contrib/purescript-vim'
 		"Plug 'roxma/nvim-completion-manager'
+		Plug 'derekwyatt/vim-scala'
 	endfunc
 
 	func s:init_coq_ide()
@@ -288,10 +292,10 @@ func s:plugins()
 	set formatexpr=LanguageClient#textDocument_rangeFormatting_sync()
 	set conceallevel=1
 	let g:javascript_conceal_function             = "ƒ"
-	let g:javascript_conceal_null                 = "␀"
+	"let g:javascript_conceal_null                 = "␀"
 	let g:javascript_conceal_this                 = "@"
-	let g:javascript_conceal_return               = "⇚"
-	let g:javascript_conceal_undefined            = "¿"
+	"let g:javascript_conceal_return               = "⇚"
+	"let g:javascript_conceal_undefined            = "¿"
 	"let g:javascript_conceal_NaN                  = "ฑ"
 	"let g:javascript_conceal_prototype            = "¶"
 	let g:javascript_conceal_static               = "•"
@@ -301,11 +305,15 @@ func s:plugins()
 	"let g:javascript_conceal_underscore_arrow_function = "🞅"
 
 	set hidden
+
+	let g:LanguageClient_autoStart = 1
+	let g:LanguageClient_autoStop = 1
+	let g:LanguageClient_settingsPath="~/.LanguageClient_settings.json" "seems not working
 	let g:LanguageClient_serverCommands = {
 	\	'haskell': ['hie-wrapper', '--lsp'],
 	\}
 	let g:LanguageClient_changeThrottle = 2 "second
-	"let g:LanguageClient_windowLogMessageLevel = "Error"  " Error | Warning | Info | Log
+	let g:LanguageClient_windowLogMessageLevel = "Log"  " Error | Warning | Info | Log
 	let g:LanguageClient_rootMarkers = ['.git*', 'package.*', 'readme*', 'license*']
 
 	nnoremap <silent> gd :call LanguageClient#textDocument_definition()<cr>
@@ -345,6 +353,7 @@ func s:plugins()
 	let g:ctrlp_clear_cache_on_exit = 0
 	let g:ctrlp_mruf_case_sensitive = 0
 	let g:SuperTabNoCompleteAfter = ['^', '\s', ';', '|', ',']
+	let g:SuperTabMappingTabLiteral = '<s-tab>'
 	let g:SuperTabCrMapping = 0
 	let g:purescript_indent_if = 4
 	let g:purescript_indent_case = 4
@@ -485,10 +494,14 @@ func s:helpers()
 
 	func Toggle(stateVar, enableCmd, disableCmd)
 		if exists(a:stateVar) && eval(a:stateVar) == 'T'
-			exec a:disableCmd
+			for cmd in split(a:disableCmd, ' ;; ')
+				exec cmd
+			endfor
 			exec 'let' a:stateVar '= "F"'
 		else
-			exec a:enableCmd
+			for cmd in split(a:enableCmd, ' ;; ')
+				exec cmd
+			endfor
 			exec 'let' a:stateVar '= "T"'
 		endif
 	endfunc
@@ -716,9 +729,9 @@ func s:keymap()
 
 		" record
 		nnoremap <a-q> q
-		nnoremap Z <nop>
-		nnoremap <s-q> qZ
-		nnoremap <s-r> @Z
+		"nnoremap Z <nop>
+		nnoremap <s-q> :call Toggle('b:recording', "normal! qr", "normal! q ;; let @r=@r[:-2]")<cr>
+		nnoremap R @r
 	endfunc
 
 	call s:keymap_init()

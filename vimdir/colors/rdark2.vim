@@ -113,12 +113,12 @@ hi javaScriptBraces guifg=#888a85
 hi javaScriptOperator guifg=#888a85
 
 " HTML
-hi htmlTag guifg=#9abdd6
-hi htmlEndTag guifg=#7a9db6
-hi htmlTagName guifg=#baddf6 gui=bold
-hi htmlSpecialTagName guifg=#cafdb6 gui=bold
-hi htmlArg guifg=#9abdd6
 hi htmlTitle guifg=#8ae234 gui=none
+hi htmlTag guifg=#baddff gui=italic
+hi htmlArg guifg=#6a7d8f gui=italic
+hi link htmlTagName htmlTag
+hi link htmlEndTag htmlTag
+hi htmlSpecialTagName guifg=#cafdb6 gui=bold
 hi link htmlH1 htmlTitle
 hi link htmlH2 htmlH1
 hi link htmlH3 htmlH1
@@ -136,6 +136,7 @@ hi link xmlTagName htmlTagName
 "hi xmlEndTag guifg=#2974a1
 
 hi jsxAttributeBraces gui=bold guifg=#585a55
+hi jsxRegion gui=italic
 
 " CSS
 hi cssSelectorOp guifg=#eeeeec
