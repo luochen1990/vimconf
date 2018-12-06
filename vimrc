@@ -310,19 +310,20 @@ func s:plugins()
 	let g:LanguageClient_autoStop = 1
 	let g:LanguageClient_settingsPath="~/.LanguageClient_settings.json" "seems not working
 	let g:LanguageClient_serverCommands = {
-	\	'haskell': ['hie-wrapper', '--lsp'],
+	\	'haskell': ['hie-wrapper', '--lsp', '--logfile', '~/.hie.log'],
 	\}
 	let g:LanguageClient_changeThrottle = 2 "second
 	let g:LanguageClient_windowLogMessageLevel = "Log"  " Error | Warning | Info | Log
 	let g:LanguageClient_rootMarkers = ['.git*', 'package.*', 'readme*', 'license*']
 
-	nnoremap <silent> gd :call LanguageClient#textDocument_definition()<cr>
-	nnoremap <silent> gr :call LanguageClient#textDocument_references()<cr>
-	nnoremap <silent> gt :call LanguageClient#textDocument_typeDefinition()<cr>
-	nnoremap <silent> gi :call LanguageClient#textDocument_implementation()<cr>
-	nnoremap <silent> gm :call LanguageClient_contextMenu()<cr>
-	nnoremap <silent> gh :call LanguageClient#textDocument_hover()<cr>
-	nnoremap <silent> gn :call LanguageClient#textDocument_rename()<cr>
+	nnoremap <silent> gm :call LanguageClient_contextMenu()<CR>
+	nnoremap <silent> gh :call LanguageClient#textDocument_hover()<CR>
+	nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
+	nnoremap <silent> gn :call LanguageClient#textDocument_rename()<CR>
+	nnoremap <silent> gf :call LanguageClient#textDocument_formatting()<CR>
+	nnoremap <silent> gr :call LanguageClient#textDocument_references()<CR>
+	nnoremap <silent> gc :call LanguageClient#textDocument_codeAction()<CR>
+	nnoremap <silent> gs :call LanguageClient#textDocument_documentSymbol()<CR>
 
 	let g:vimshell_prompt = '$ '
 	let g:mystatusline_activated = 1
@@ -519,7 +520,7 @@ func s:keymap()
 		call s:assistant_panel()
 		call s:parentheses_operations()
 		call s:compiler_invoking()
-		"call s:tab_browsing()
+		call s:tab_browsing()
 		call s:advanced_shotcut()
 		call s:structural_editing()
 	endfunc
@@ -698,12 +699,12 @@ func s:keymap()
 		"nnoremap tq :q<cr>
 		"nnoremap tc g<s-t>:q<cr> "nnoremap tj :tabe<space>$ws<cr> "nnoremap tl :tabe<space>%:p:h\<cr>
 		"
-		"nnoremap <c-tab> gt
-		"nnoremap <c-s-tab> g<s-t>
-		"inoremap <c-tab> <esc>gt
-		"inoremap <c-s-tab> <esc>g<s-t>
-		"nnoremap <c-j> <c-w>j
-		"nnoremap <c-k> <c-w>k
+		nnoremap <c-tab> gt
+		nnoremap <c-s-tab> g<s-t>
+		inoremap <c-tab> <esc>gt
+		inoremap <c-s-tab> <esc>g<s-t>
+		nnoremap <c-j> <c-w>j
+		nnoremap <c-k> <c-w>k
 	endfunc
 
 	func Start_stop_recording()

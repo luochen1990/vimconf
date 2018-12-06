@@ -35,6 +35,14 @@ func CompileRun(mode)
 		execute '!start cmd /c g++ %:p:r.cpp -Wall -Wno-unused -std=c++98 -o '.out.' & '.run.' & pause'
 	endif
 	
+	if &filetype == 'c'
+		if a:mode == 'e' || a:mode == 'r'
+			let out = '%:p:h\out'
+			let run = out.(filereadable(expand('%:p:r').'.cin')? ' < %:p:r.cin' : '')
+			execute '!start cmd /c gcc %:p -Wall -D__NO_INLINE__ -Wno-unused -O2 -o '.out.' && '.run.' && pause'
+		endif
+	endif
+	
 	if &filetype[:5] == 'python'
 		execute "!start cmd /c ".&filetype." %:p & pause"
 	endif
