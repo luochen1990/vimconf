@@ -197,8 +197,8 @@ func s:editor()
 	"if v:version >= 704 |set relativenumber |endif
 
 	set spelllang=en_us,cjk
-	set nospell
-	"auto bufenter * syntax spell notoplevel
+	"set spell
+	"auto bufenter * syntax spell toplevel
 
 	set nowrapscan incsearch hlsearch
 
@@ -272,9 +272,9 @@ func s:plugins()
 		Plug 'ElmCast/elm-vim', {'for': 'elm'}
 		"Plug 'tasn/vim-tsx'
 		Plug 'leafgarland/typescript-vim', {'for': 'typescript'}
-		Plug 'peitalin/vim-jsx-typescript', {'for': 'typescript'}
+		"Plug 'peitalin/vim-jsx-typescript', {'for': 'typescript'}
 		Plug 'pangloss/vim-javascript' ", {'for': 'javascript'}
-		Plug 'mxw/vim-jsx', {'for': 'javascript'}
+		"Plug 'mxw/vim-jsx', {'for': 'javascript'}
 		Plug 'purescript-contrib/purescript-vim'
 		"Plug 'roxma/nvim-completion-manager'
 		Plug 'derekwyatt/vim-scala'
@@ -335,7 +335,7 @@ func s:plugins()
 	\	'parentheses': map(['start=/(/ end=/)/', 'start=/\[/ end=/\]/', 'start=/{/ end=/}/'], 'v:val." fold"'),
 	\	'separately': {
 	\		'csv': {
-	\			'parentheses': ['start=/\v[^,]+/ step=/\v\,/ end=/$/ keepend', 'start=/\v(,\ze,)/ end=/$/ keepend'],
+	\			'parentheses': ['start=/\v[^,]*\,/ step=// end=/$/ keepend'],
 	\		},
 	\		'coq': 0,
 	\	}
@@ -699,10 +699,10 @@ func s:keymap()
 		"nnoremap tq :q<cr>
 		"nnoremap tc g<s-t>:q<cr> "nnoremap tj :tabe<space>$ws<cr> "nnoremap tl :tabe<space>%:p:h\<cr>
 		"
-		nnoremap <c-tab> gt
-		nnoremap <c-s-tab> g<s-t>
-		inoremap <c-tab> <esc>gt
-		inoremap <c-s-tab> <esc>g<s-t>
+		"nnoremap <c-tab> gt
+		"nnoremap <c-s-tab> g<s-t>
+		"inoremap <c-tab> <esc>gt
+		"inoremap <c-s-tab> <esc>g<s-t>
 		nnoremap <c-j> <c-w>j
 		nnoremap <c-k> <c-w>k
 	endfunc
