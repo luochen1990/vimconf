@@ -1,3 +1,5 @@
+if exists('s:loaded') | finish | endif | let s:loaded = 1
+
 func CompileRun(mode)
 	if &filetype == 'cpp'
 		if a:mode == 'e' || a:mode == 'r'

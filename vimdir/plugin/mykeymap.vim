@@ -1,3 +1,5 @@
+if exists('s:loaded') | finish | endif | let s:loaded = 1
+
 func mykeymap#load()
 	noremap j gj
 	noremap k gk

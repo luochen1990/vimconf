@@ -1,3 +1,5 @@
+if exists('s:loaded') | finish | endif | let s:loaded = 1
+
 func luoc_srm#load_file()
 	let g:luoc_showGenerated = 0
 	let g:luoc_destination = 'F:\Desktop\srm.cpp'
