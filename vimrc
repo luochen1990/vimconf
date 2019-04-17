@@ -222,6 +222,7 @@ func s:plugins()
 		Plug 'luochen1990/rainbow'
 		Plug 'luochen1990/indent-detector.vim'
 		Plug 'luochen1990/select-and-search'
+		Plug 'xuhdev/SingleCompile'
 		Plug 'tpope/vim-fugitive'
 		"Plug 'mhinz/vim-startify'
 		Plug 'ctrlpvim/ctrlp.vim'
@@ -628,9 +629,11 @@ func s:keymap()
 	func s:compiler_invoking()
 		"load to repl: 加载当前文件到REPL并启动REPL
 		nnoremap cr :call Compilers('r')<cr>
+		"nnoremap cr :SCCompileRun<cr>
 
 		"compile and execute: 编译当前文件并执行
-		nnoremap ce :call Compilers('e')<cr>
+		"nnoremap ce :call Compilers('e')<cr>
+		nnoremap ce :SCCompileRun<cr>
 
 		"translate: 转译当前文件
 		nnoremap ct :call Compilers('t')<cr>
