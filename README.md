@@ -26,7 +26,7 @@ Try it
 
 You can try it with the following steps:
 
-- `git clone --recursive git@github.com:luochen1990/vimconf.git`
+- `git clone git@github.com:luochen1990/vimconf.git`
 - put this directory 'vimconf' to whereever you like, such as your dropbox directory.
 - edit your vimrc so it looks like this (just replace the dropbox path 'D:/Dropbox/' to your own):
 ```vim
@@ -34,7 +34,7 @@ You can try it with the following steps:
 	source $vimconf/vimrc
 ```
 - reboot your vim.
-- run `:BundleInstall` in Vim to install other plugins.
+- run `:PlugInstall` in Vim to install other plugins.
 - reboot your vim.
 
 Dropbox Friendly
