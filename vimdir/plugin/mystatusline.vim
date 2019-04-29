@@ -27,25 +27,23 @@ if exists('g:mystatusline_activated') && g:mystatusline_activated
 	"setlocal statusline=%!statusline_str
 	set statusline=%!statusline_str
 	
-	if has('gui_running')
-		if exists('g:mystatusline_colorschema') && g:mystatusline_colorschema == 1
-			hi user1 guifg=#391100  guibg=#d3905c
-			hi user2 guifg=#112605  guibg=#aefe7b
-			hi user3 guifg=#292b00  guibg=#f4f597
-			hi user4 guifg=#002600  guibg=#67ab6e
-			hi user5 guifg=#112605  guibg=#aefe7b
-			hi user6 guifg=#051d00  guibg=#7dcc7d
-		else
-			"hi user1 guifg=#ffffff  guibg=#116699
-			auto bufenter * if &ff == 'dos' | hi user1 guifg=#ffffff  guibg=#993333 | endif
-			auto bufenter * if &ff == 'mac' | hi user1 guifg=#ffffff  guibg=#993333 | endif
-			auto bufenter * if &ff == 'unix' | hi user1 guifg=#ffffff  guibg=#116699 | endif
-			hi user2 guifg=#ffffff  guibg=#2277aa
-			hi user3 guifg=#ffffff  guibg=#3388bb
-			hi user4 guifg=#ffffff  guibg=#4499cc
-			hi user5 guifg=#ffffff  guibg=#2277aa
-			hi user6 guifg=#ffffff  guibg=#005588
-		endif
+	if exists('g:mystatusline_colorschema') && g:mystatusline_colorschema == 1
+		hi user1 guifg=#391100  guibg=#d3905c
+		hi user2 guifg=#112605  guibg=#aefe7b
+		hi user3 guifg=#292b00  guibg=#f4f597
+		hi user4 guifg=#002600  guibg=#67ab6e
+		hi user5 guifg=#112605  guibg=#aefe7b
+		hi user6 guifg=#051d00  guibg=#7dcc7d
+	else
+		"hi user1 guifg=#ffffff  guibg=#116699
+		auto bufenter * if &ff == 'dos' | hi user1 guifg=#ffffff  guibg=#993333 | endif
+		auto bufenter * if &ff == 'mac' | hi user1 guifg=#ffffff  guibg=#993333 | endif
+		auto bufenter * if &ff == 'unix' | hi user1 guifg=#ffffff  guibg=#116699 | endif
+		hi user2 guifg=#ffffff  guibg=#2277aa
+		hi user3 guifg=#ffffff  guibg=#3388bb
+		hi user4 guifg=#ffffff  guibg=#4499cc
+		hi user5 guifg=#ffffff  guibg=#2277aa
+		hi user6 guifg=#ffffff  guibg=#005588
 	endif
 endif
 

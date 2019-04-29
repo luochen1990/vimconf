@@ -152,7 +152,8 @@ func CompileRun(mode)
 
 	if &filetype == 'haskell' || &filetype == 'lhaskell'
 		if a:mode == 'r'
-			exec '!start stack exec -- ghci -i../src:../../src:../../../src "%"'
+			"exec '!start stack exec -- ghci -i../src:../../src:../../../src "%"'
+			exec 'VimShellInteractive stack exec -- ghci -i../src:../../src:../../../src '.expand('%')
 		elseif a:mode == 'e'
 			"let output = system("ghc -H100M -O3 -Wall -prof -auto-all -rtsopts -o out +RTS -K1G -M2G -RTS ".expand("%:p")) " -fforce-recomp
 			let output = system("stack exec -- ghc -H100M -O3 -rtsopts -o out +RTS -K1G -M2G -RTS ".expand("%"))

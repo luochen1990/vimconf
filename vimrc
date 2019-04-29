@@ -178,6 +178,7 @@ func s:editor()
 	filetype plugin indent on
 
 	syntax enable
+	set termguicolors
 	set background=light
 	"silent! colorscheme soladark
 	let g:solarized_contrast = "high"
@@ -219,31 +220,58 @@ endfunc
 
 func s:plugins()
 	func s:register_plugins()
+
+		" to solve the im swiching problem on *nix os
+		Plug 'rlue/vim-barbaric'
+
+		" The input method for Normal mode (as defined by `xkbswitch -g` or `ibus engine`)
+		let g:barbaric_default = 0
+
+		" The scope where alternate input methods persist (buffer, window, tab, global)
+		let g:barbaric_scope = 'buffer'
+
+		" Forget alternate input method after n seconds in Normal mode (disabled by default)
+		" Useful if you only need IM persistence for short bursts of active work.
+		let g:barbaric_timeout = -1
+
+		" rainbow parentheses
 		Plug 'luochen1990/rainbow'
+
+		" solve indent inconsistent problem
 		Plug 'luochen1990/indent-detector.vim'
+
+		" select a piece of code and press n to search next one
 		Plug 'luochen1990/select-and-search'
+
+		" time log
+		Plug 'wakatime/vim-wakatime'
+
+		" compile and run single file
 		Plug 'xuhdev/SingleCompile'
+
+		" lsp client: https://microsoft.github.io/language-server-protocol/implementors/tools/
+		Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'}
+
+		"(Optional) Multi-entry selection UI.
+		Plug 'junegunn/fzf'
+
+		" forgotten
 		Plug 'tpope/vim-fugitive'
 		"Plug 'mhinz/vim-startify'
 		Plug 'ctrlpvim/ctrlp.vim'
 		Plug 'Shougo/unite.vim'
 		"Plug 'Shougo/denite.nvim'
 		Plug 'Shougo/vimfiler.vim'
-		Plug 'Shougo/vimproc.vim'
+		Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 		Plug 'Shougo/vimshell.vim'
 		Plug 'mileszs/ack.vim' "searching tool
 		Plug 'tpope/vim-vinegar'
 		Plug 'vim-scripts/Conque-Shell'
 
-		"https://microsoft.github.io/language-server-protocol/implementors/tools/
-		Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'}
-		"(Optional) Multi-entry selection UI.
-		Plug 'junegunn/fzf'
 		Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
 
 		"Plug 'liuchengxu/space-vim-dark'
 		"Plug 'altercation/vim-colors-solarized'
-		Plug 'wakatime/vim-wakatime'
 		Plug 'tpope/vim-surround'
 		Plug 'tpope/vim-repeat'
 		"Plug 'rdark'
@@ -252,6 +280,8 @@ func s:plugins()
 		"Plug 'justinmk/vim-sneak'
 		Plug 'ap/vim-css-color'
 		"Plug 'w0rp/ale'
+
+		" lang specific syntax and indent
 		"Plug 'python.vim', {'for': 'python'}
 		"Plug 'davidhalter/jedi-vim', {'for': 'python'}
 		Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
@@ -312,7 +342,14 @@ func s:plugins()
 	let g:LanguageClient_settingsPath="~/.LanguageClient_settings.json" "seems not working
 	let g:LanguageClient_serverCommands = {
 	\	'haskell': ['hie-wrapper', '--lsp', '--logfile', '~/.hie.log'],
+	\	'rust': ['rustup', 'run', 'nightly', 'rls'],
+	\	'go': ['go-langserver'],
 	\}
+
+	"\	'javascript': ['/opt/javascript-typescript-langserver/lib/language-server-stdio.js'],
+	"\	'python': ['pyls'],
+	"\	'cpp': ['clangd'],
+
 	let g:LanguageClient_changeThrottle = 2 "second
 	let g:LanguageClient_windowLogMessageLevel = "Log"  " Error | Warning | Info | Log
 	let g:LanguageClient_rootMarkers = ['.git*', 'package.*', 'readme*', 'license*']
@@ -543,7 +580,6 @@ func s:keymap()
 
 	func s:assistant_panel()
 		" quickfix
-		nnoremap <c-f> :call Toggle('g:qfix', "copen\n normal! zz", 'cclose')<cr>
 		nnoremap <silent> f :call Toggle('g:qfix', "copen\n normal! zz", 'cclose')<cr>
 
 		auto bufreadpost quickfix nnoremap <buffer> <silent> q :call Toggle('g:qfix', "copen\n normal! zz", 'cclose')<cr>
@@ -554,8 +590,8 @@ func s:keymap()
 		nnoremap t :VimFilerExplorer -force-hide<cr>
 
 		" shell
-		nnoremap <c-g> :VimShellPop -toggle<cr>
-		inoremap <c-g> <esc>:VimShellPop -toggle<cr>
+		nnoremap <c-f> :VimShellPop -toggle<cr>
+		inoremap <c-f> <esc>:VimShellPop -toggle<cr>
 
 		" switch between panels
 		nnoremap ; <c-w><c-w>
