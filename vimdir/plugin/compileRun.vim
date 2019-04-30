@@ -95,7 +95,8 @@ func CompileRun(mode)
 
 	if &filetype == 'java'
 		if a:mode == 'r'
-			exec '!start cmd /c jshell --startup %'
+			"exec '!start cmd /c jshell --startup %'
+			exec 'VimShellInteractive jshell --startup '.expand('%')
 		elseif a:mode == 'e'
 			exec "!start cmd /c javac %:p & java -cp %:p:h %:r & pause"
 		endif
@@ -119,7 +120,8 @@ func CompileRun(mode)
 				"exe 'silent !start chrome --allow-file-access-from-files --Incognito %:p:r.html'
 				"exe '!start cmd /k coffee %:p'
 			else
-				exec '!start cmd /k coffee %'
+				"exec '!start cmd /k coffee %'
+				exec 'VimShellInteractive coffee '.expand('%')
 			endif
 		elseif a:mode == 'e'
 			exec '!start cmd /k coffee %'
@@ -180,7 +182,8 @@ func CompileRun(mode)
 
 	if &filetype == 'idris' || &filetype == 'lidris'
 		if a:mode == 'r'
-			exe '!start cmd /c idris -p contrib -p effects -p prelude -p pruviloj -p lightyear -p idrisscript "%"'
+			"exe '!start cmd /c idris -p contrib -p effects -p prelude -p pruviloj -p lightyear -p idrisscript "%"'
+			exec 'VimShellInteractive idris -p contrib -p effects -p prelude -p pruviloj -p lightyear -p idrisscript '.expand('%')
 		elseif a:mode == 'e'
 			let output = system("idris -p contrib -p effects -p prelude -p pruviloj -p lightyear -p idrisscript -o out ".expand("%:p"))
 			if v:shell_error == 0
@@ -222,6 +225,12 @@ func CompileRun(mode)
 			exec '!start cmd /c set PATH='.extra_path.';\%PATH\% & rustc % & pause'
 		elseif a:mode == 'e'
 			exec '!start cmd /c set PATH='.extra_path.';\%PATH\% & rustc % & pause'
+		endif
+	endif
+
+	if &filetype == 'go'
+		if a:mode == 'r'
+			exec 'VimShellInteractive gore -context '.expand('%')
 		endif
 	endif
 

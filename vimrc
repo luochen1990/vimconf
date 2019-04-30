@@ -249,6 +249,9 @@ func s:plugins()
 		" compile and run single file
 		Plug 'xuhdev/SingleCompile'
 
+		" shell for nvim/vim8 (better vimshell)
+		Plug 'Shougo/deol.nvim'
+
 		" lsp client: https://microsoft.github.io/language-server-protocol/implementors/tools/
 		Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'}
 
