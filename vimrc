@@ -1,13 +1,14 @@
+" TroubleShooting: disable following init steps from bottom to up
 func s:init()
 	call s:helpers() "definitions of helper functinos
-	call s:encoding() "set character encoding schemes
-	call s:general() "global options
 	call s:personal() "env variables and working dir
-	call s:vimdir() "my own vimdir
-	call s:font()
-	call s:editor() "filetypes & syntax & highlighting & indent
 	call s:keymap()
-	call s:plugins()
+	call s:encoding() "set character encoding schemes
+	call s:vimdir() "my own vimdir
+	call s:editor() "filetypes & syntax & highlighting & indent
+	call s:general() "global options
+	call s:font()
+	call s:plugins() "load plugins and their configurations
 endfunc
 
 func s:register_plugins()
