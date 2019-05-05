@@ -1,45 +1,84 @@
 func s:init()
-	call s:helpers()
-	call s:encoding()
-	call s:general()
+	call s:helpers() "definitions of helper functinos
+	call s:encoding() "set character encoding schemes
+	call s:general() "global options
+	call s:personal() "env variables and working dir
+	call s:vimdir() "my own vimdir
 	call s:font()
-	call s:editor()
+	call s:editor() "filetypes & syntax & highlighting & indent
 	call s:keymap()
 	call s:plugins()
 endfunc
 
+func s:register_plugins()
+	Plug 'rlue/vim-barbaric' " to solve the im swiching problem on *nix os
+
+	Plug 'luochen1990/rainbow' " rainbow parentheses
+	Plug 'luochen1990/indent-detector.vim' " solve indent inconsistent problem
+	Plug 'luochen1990/select-and-search' " select a piece of code and press n to search next one
+	Plug 'wakatime/vim-wakatime' " time log
+	Plug 'xuhdev/SingleCompile' " compile and run single file
+	Plug 'Shougo/deol.nvim' " shell for nvim/vim8 (better vimshell)
+	Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'} " lsp client: https://microsoft.github.io/language-server-protocol/implementors/tools/
+	Plug 'junegunn/fzf' "(Optional) Multi-entry selection UI.
+
+	" forgotten
+	Plug 'tpope/vim-fugitive'
+	"Plug 'mhinz/vim-startify'
+	Plug 'ctrlpvim/ctrlp.vim'
+	Plug 'Shougo/unite.vim'
+	"Plug 'Shougo/denite.nvim'
+	Plug 'Shougo/vimfiler.vim'
+	Plug 'Shougo/vimproc.vim', {'do' : 'make'}
+	Plug 'Shougo/vimshell.vim'
+	Plug 'mileszs/ack.vim' "searching tool
+	Plug 'tpope/vim-vinegar'
+	Plug 'vim-scripts/Conque-Shell'
+
+	Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
+
+	"Plug 'liuchengxu/space-vim-dark'
+	"Plug 'altercation/vim-colors-solarized'
+	Plug 'tpope/vim-surround'
+	Plug 'tpope/vim-repeat'
+	"Plug 'rdark'
+	"Plug 'genindent.vim'
+	Plug 'ervandew/supertab'
+	"Plug 'justinmk/vim-sneak'
+	Plug 'ap/vim-css-color'
+	"Plug 'w0rp/ale'
+
+	" lang specific syntax and indent
+	"Plug 'python.vim', {'for': 'python'}
+	"Plug 'davidhalter/jedi-vim', {'for': 'python'}
+	Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
+	Plug 'digitaltoad/vim-jade', {'for': 'jade'}
+	Plug 'wavded/vim-stylus', {'for': 'stylus'}
+	Plug 'groenewege/vim-less', {'for': 'less'}
+	Plug 'posva/vim-vue', {'for': 'vue'}
+	"Plug 'file:///~/Github/vim-haskellConceal'
+	"Plug 'Twinside/vim-haskellConceal', {'for': 'haskell'}
+	"Plug 'enomsg/vim-haskellConcealPlus', {'for': 'haskell'}
+	Plug 'wlangstroth/vim-racket', {'for': 'racket'}
+	"Plug 'lambdatoast/elm.vim'
+	"Plug 'eagletmt/neco-ghc'
+	"Plug 'raichoo/purescript-vim', {'for': 'purescript'}
+	Plug 'idris-hackers/idris-vim', {'for': 'idris'}
+	"Plug 'trefis/coquille.git'
+	"Plug 'let-def/vimbufsync'
+	"Plug 'gu-fan/riv.vim'
+	Plug 'ElmCast/elm-vim', {'for': 'elm'}
+	"Plug 'tasn/vim-tsx'
+	Plug 'leafgarland/typescript-vim', {'for': 'typescript'}
+	"Plug 'peitalin/vim-jsx-typescript', {'for': 'typescript'}
+	Plug 'pangloss/vim-javascript' ", {'for': 'javascript'}
+	"Plug 'mxw/vim-jsx', {'for': 'javascript'}
+	Plug 'purescript-contrib/purescript-vim'
+	"Plug 'roxma/nvim-completion-manager'
+	Plug 'derekwyatt/vim-scala'
+endfunc
+
 func s:general()
-	"let g:sh_no_error = 1
-	let dropbox_candidates = [expand('~/Dropbox'), 'D:/Dropbox']
-	for d in dropbox_candidates
-		if !exists('$Dropbox') && isdirectory(d) |let $Dropbox = d |endif
-	endfor
-	if exists('$Dropbox') "try to use $Dropbox/Workspace firstly
-		let $ws = '$Dropbox/Workspace'
-	elseif isdirectory($HOME.'/ws') "try to use $HOME/Workspace secondly
-		let $ws = '$HOME/ws'
-	else "try to find some place to create /tmpws as backup
-		let $ws = exists('$DESKTOP')? $DESKTOP : $HOME
-		if isdirectory($ws.'/ws')
-			let $ws = $ws.'/ws'
-		elseif exists('*mkdir')
-			call mkdir($ws.'/ws', 'p')
-			let $ws = $ws.'/ws'
-		endif
-	endif
-
-	if exists('$vimconf')
-		let $vimrc = $vimconf.'/vimrc'
-		let $vimdir = $vimconf.'/vimdir'
-		call s:expand_rtp([$vimdir]) " + split(glob($vimconf.'/bundle/*'), '\n'))
-	else
-		let $vimrc = has('win32')? $HOME.'/_vimrc' : $HOME.'/.vimrc'
-		let $vimdir = has('win32')? $HOME.'/vimfiles' : $HOME.'/.vim'
-	endif
-	cd $ws
-	auto vimenter * cd $ws
-	auto bufenter * silent! lcd %:p:h "LIKE AUTOCHDIR
-
 	set nocompatible
 	set autoread "lazyredraw
 	set visualbell t_vb=
@@ -52,23 +91,24 @@ func s:general()
 	"MOVE CURSOR TO LATEST POS
 	auto bufreadpost * silent! exec "normal! g'\""
 
+	if has('mouse')
+		set mouse=a mousefocus mousemodel=popup_setpos
+	endif
+
 	if has('gui_running')
 		set guioptions=r "egmrltT
 		if stridx(&guioptions, 'm') >= 0 |set langmenu=zh_cn.utf-8 |source $vimruntime/delmenu.vim |source $vimruntime/menu.vim |endif
 		"set guitablabel=%N\ %f
-		if has('mouse')
-			set mouse=a mousefocus mousemodel=popup_setpos
-		endif
-		if has('gui_running') "has('win32') || has('win64')
-			"auto guienter * silent! call libcallnr("vimtweak.dll", 'SetAlpha', 220)
-			set winaltkeys=no
-			auto guienter * simalt ~x "MAXIMIZE WINDOW
-			noremap <a-space> :simalt ~<cr>
-			inoremap <a-space> <esc>:simalt ~<cr>
-			"set imactivatekey=c-space
-			"inoremap <silent> <esc> <esc>:set iminsert=0<cr>
-			"set iminsert=0
-		endif
+		"if has('win32') || has('win64')
+		"	"auto guienter * silent! call libcallnr("vimtweak.dll", 'SetAlpha', 220)
+		"	set winaltkeys=no
+		"	auto guienter * simalt ~x "MAXIMIZE WINDOW
+		"	noremap <a-space> :simalt ~<cr>
+		"	inoremap <a-space> <esc>:simalt ~<cr>
+		"	"set imactivatekey=c-space
+		"	"inoremap <silent> <esc> <esc>:set iminsert=0<cr>
+		"	"set iminsert=0
+		"endif
 	else
 		set showmatch matchtime=2
 	endif
@@ -79,6 +119,44 @@ func s:general()
 	"	au FocusLost * let g:oldmouse=&mouse | set mouse=
 	"	au FocusGained * if exists('g:oldmouse') | let &mouse=g:oldmouse | unlet g:oldmouse | endif
 	"augroup END
+endfunc
+
+func s:personal()
+	"let g:sh_no_error = 1
+	let dropbox_candidates = [expand('~/Dropbox'), 'D:/Dropbox']
+	for d in dropbox_candidates
+		if !exists('$Dropbox') && isdirectory(d) |let $Dropbox = d |endif
+	endfor
+	if exists('$Dropbox') "try to use $Dropbox/Workspace firstly
+		let $ws = '$Dropbox/Workspace'
+	elseif isdirectory($HOME.'/ws') "try to use $HOME/Workspace secondly
+		let $ws = '$HOME/ws'
+	else "try to find some place to create ws/ as temp workspace
+		let $ws = exists('$DESKTOP')? $DESKTOP : $HOME
+		if isdirectory($ws.'/ws')
+			let $ws = $ws.'/ws'
+		elseif exists('*mkdir')
+			call mkdir($ws.'/ws', 'p')
+			let $ws = $ws.'/ws'
+		endif
+	endif
+
+	if exists('$vimconf')
+		let $vimrc = $vimconf.'/vimrc'
+		let $vimdir = $vimconf.'/vimdir'
+	else
+		let $vimrc = has('win32')? $HOME.'/_vimrc' : $HOME.'/.vimrc'
+		let $vimdir = has('win32')? $HOME.'/vimfiles' : $HOME.'/.vim'
+	endif
+	cd $ws
+	auto vimenter * cd $ws
+	auto bufenter * silent! lcd %:p:h "LIKE AUTOCHDIR
+endfunc
+
+func s:vimdir()
+	if exists('$vimconf')
+		call s:expand_rtp([$vimdir]) " + split(glob($vimconf.'/bundle/*'), '\n'))
+	endif
 endfunc
 
 func s:encoding()
@@ -219,101 +297,6 @@ func s:editor()
 endfunc
 
 func s:plugins()
-	func s:register_plugins()
-
-		" to solve the im swiching problem on *nix os
-		Plug 'rlue/vim-barbaric'
-
-		" The input method for Normal mode (as defined by `xkbswitch -g` or `ibus engine`)
-		let g:barbaric_default = 0
-
-		" The scope where alternate input methods persist (buffer, window, tab, global)
-		let g:barbaric_scope = 'buffer'
-
-		" Forget alternate input method after n seconds in Normal mode (disabled by default)
-		" Useful if you only need IM persistence for short bursts of active work.
-		let g:barbaric_timeout = -1
-
-		" rainbow parentheses
-		Plug 'luochen1990/rainbow'
-
-		" solve indent inconsistent problem
-		Plug 'luochen1990/indent-detector.vim'
-
-		" select a piece of code and press n to search next one
-		Plug 'luochen1990/select-and-search'
-
-		" time log
-		Plug 'wakatime/vim-wakatime'
-
-		" compile and run single file
-		Plug 'xuhdev/SingleCompile'
-
-		" shell for nvim/vim8 (better vimshell)
-		Plug 'Shougo/deol.nvim'
-
-		" lsp client: https://microsoft.github.io/language-server-protocol/implementors/tools/
-		Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'}
-
-		"(Optional) Multi-entry selection UI.
-		Plug 'junegunn/fzf'
-
-		" forgotten
-		Plug 'tpope/vim-fugitive'
-		"Plug 'mhinz/vim-startify'
-		Plug 'ctrlpvim/ctrlp.vim'
-		Plug 'Shougo/unite.vim'
-		"Plug 'Shougo/denite.nvim'
-		Plug 'Shougo/vimfiler.vim'
-		Plug 'Shougo/vimproc.vim', {'do' : 'make'}
-		Plug 'Shougo/vimshell.vim'
-		Plug 'mileszs/ack.vim' "searching tool
-		Plug 'tpope/vim-vinegar'
-		Plug 'vim-scripts/Conque-Shell'
-
-		Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
-
-		"Plug 'liuchengxu/space-vim-dark'
-		"Plug 'altercation/vim-colors-solarized'
-		Plug 'tpope/vim-surround'
-		Plug 'tpope/vim-repeat'
-		"Plug 'rdark'
-		"Plug 'genindent.vim'
-		Plug 'ervandew/supertab'
-		"Plug 'justinmk/vim-sneak'
-		Plug 'ap/vim-css-color'
-		"Plug 'w0rp/ale'
-
-		" lang specific syntax and indent
-		"Plug 'python.vim', {'for': 'python'}
-		"Plug 'davidhalter/jedi-vim', {'for': 'python'}
-		Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
-		Plug 'digitaltoad/vim-jade', {'for': 'jade'}
-		Plug 'wavded/vim-stylus', {'for': 'stylus'}
-		Plug 'groenewege/vim-less', {'for': 'less'}
-		Plug 'posva/vim-vue', {'for': 'vue'}
-		"Plug 'file:///~/Github/vim-haskellConceal'
-		"Plug 'Twinside/vim-haskellConceal', {'for': 'haskell'}
-		"Plug 'enomsg/vim-haskellConcealPlus', {'for': 'haskell'}
-		Plug 'wlangstroth/vim-racket', {'for': 'racket'}
-		"Plug 'lambdatoast/elm.vim'
-		"Plug 'eagletmt/neco-ghc'
-		"Plug 'raichoo/purescript-vim', {'for': 'purescript'}
-		Plug 'idris-hackers/idris-vim', {'for': 'idris'}
-		"Plug 'trefis/coquille.git'
-		"Plug 'let-def/vimbufsync'
-		"Plug 'gu-fan/riv.vim'
-		Plug 'ElmCast/elm-vim', {'for': 'elm'}
-		"Plug 'tasn/vim-tsx'
-		Plug 'leafgarland/typescript-vim', {'for': 'typescript'}
-		"Plug 'peitalin/vim-jsx-typescript', {'for': 'typescript'}
-		Plug 'pangloss/vim-javascript' ", {'for': 'javascript'}
-		"Plug 'mxw/vim-jsx', {'for': 'javascript'}
-		Plug 'purescript-contrib/purescript-vim'
-		"Plug 'roxma/nvim-completion-manager'
-		Plug 'derekwyatt/vim-scala'
-	endfunc
-
 	func s:init_coq_ide()
 		silent CoqLaunch
 		map <buffer> <silent> <F2> :CoqUndo<CR>
@@ -321,6 +304,20 @@ func s:plugins()
 		map <buffer> <silent> <F4> :CoqToCursor<CR>
 	endfunc
 	au FileType coq call s:init_coq_ide()
+
+	" CONFIG 'rlue/vim-barbaric'
+
+	" The input method for Normal mode (as defined by `xkbswitch -g` or `ibus engine`)
+	let g:barbaric_default = 0
+
+	" The scope where alternate input methods persist (buffer, window, tab, global)
+	let g:barbaric_scope = 'buffer'
+
+	" Forget alternate input method after n seconds in Normal mode (disabled by default)
+	" Useful if you only need IM persistence for short bursts of active work.
+	let g:barbaric_timeout = -1
+
+	" CONFIG 'autozimu/LanguageClient-neovim'
 
 	set completefunc=LanguageClient#complete
 	set formatexpr=LanguageClient#textDocument_rangeFormatting_sync()
@@ -338,7 +335,7 @@ func s:plugins()
 	"let g:javascript_conceal_noarg_arrow_function = "🞅"
 	"let g:javascript_conceal_underscore_arrow_function = "🞅"
 
-	set hidden
+	"set hidden
 
 	let g:LanguageClient_autoStart = 1
 	let g:LanguageClient_autoStop = 1
@@ -353,7 +350,7 @@ func s:plugins()
 	"\	'python': ['pyls'],
 	"\	'cpp': ['clangd'],
 
-	let g:LanguageClient_changeThrottle = 2 "second
+	"let g:LanguageClient_changeThrottle = 2 "second
 	let g:LanguageClient_windowLogMessageLevel = "Log"  " Error | Warning | Info | Log
 	let g:LanguageClient_rootMarkers = ['.git*', 'package.*', 'readme*', 'license*']
 
@@ -450,9 +447,12 @@ func s:plugins()
 	let g:ackprg = 'ag --vimgrep'
 	"let g:ackprg = 'ag --nogroup --nocolor --column'
 
-	call plug#begin($vimconf.'/bundle')
-	call s:register_plugins()
-	call plug#end()
+	if exists('$vimconf')
+		source $vimconf/plug.vim
+		call plug#begin($vimconf.'/bundle')
+		call s:register_plugins()
+		call plug#end()
+	endif
 endfunc
 
 func s:helpers()
