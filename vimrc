@@ -343,7 +343,7 @@ func s:plugins()
 	let g:LanguageClient_settingsPath="~/.LanguageClient_settings.json" "seems not working
 	let g:LanguageClient_serverCommands = {
 	\	'haskell': ['hie-wrapper', '--lsp', '--logfile', '~/.hie.log'],
-	\	'rust': ['rustup', 'run', 'nightly', 'rls'],
+	\	'rust': ['rustup', 'run', 'stable', 'rls'],
 	\	'go': ['go-langserver'],
 	\}
 
@@ -355,7 +355,38 @@ func s:plugins()
 	let g:LanguageClient_windowLogMessageLevel = "Log"  " Error | Warning | Info | Log
 	let g:LanguageClient_rootMarkers = ['.git*', 'package.*', 'readme*', 'license*']
 
+	let g:LanguageClient_diagnosticsDisplay = {
+	\	1: {
+	\		"name": "Error",
+	\		"texthl": "ALEError",
+	\		"signTexthl": "ALEErrorSign",
+	\		"virtualTexthl": "Error",
+	\	},
+	\	2: {
+	\		"name": "Warning",
+	\		"texthl": "ALEWarning",
+	\		"signTexthl": "ALEWarningSign",
+	\		"virtualTexthl": "Debug",
+	\	},
+	\	3: {
+	\		"name": "Information",
+	\		"texthl": "ALEInfo",
+	\		"signText": "I",
+	\		"signTexthl": "ALEInfoSign",
+	\		"virtualTexthl": "Debug",
+	\	},
+	\	4: {
+	\		"name": "Hint",
+	\		"texthl": "ALEInfo",
+	\		"signText": "H",
+	\		"signTexthl": "ALEInfoSign",
+	\		"virtualTexthl": "Debug",
+	\	},
+	\}
+
 	nnoremap <silent> gm :call LanguageClient_contextMenu()<CR>
+	nnoremap <silent> gt :call LanguageClient#textDocument_typeDefinition()<CR>
+	nnoremap <silent> gT :call LanguageClient#textDocument_signatureHelp()<CR>
 	nnoremap <silent> gh :call LanguageClient#textDocument_hover()<CR>
 	nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
 	nnoremap <silent> gn :call LanguageClient#textDocument_rename()<CR>
