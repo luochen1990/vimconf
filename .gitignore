@@ -1,3 +1,4 @@
 /bundle/*
 !/bundle/vundle
 *.old
+.DS_Store
