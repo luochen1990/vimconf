@@ -4,57 +4,63 @@ if exists('s:loaded') || exists('g:no_vim_conceal') || &enc != 'utf-8' | finish 
 
 fun SynConceal()
   " programming
-  syn match Operator "\>\s*\zs===\ze\s*\<" conceal cchar=≡
-  syn match Operator "\>\s*\zs\~==\ze\s*\<" conceal cchar=≅
-  syn match Operator "\>\s*\zs<=\ze\s*\<" conceal cchar=≤
-  syn match Operator "\>\s*\zs>=\ze\s*\<" conceal cchar=≥
-  syn match Operator "\>\s*\zs[!/]=\ze\s*\<" conceal cchar=≠
+  syn match concealOp "\>\s*\zs===\ze\s*\<" conceal cchar=≡
+  syn match concealOp "\>\s*\zs\~==\ze\s*\<" conceal cchar=≅
+  syn match concealOp "\>\s*\zs<=\ze\s*\<" conceal cchar=≤
+  syn match concealOp "\>\s*\zs>=\ze\s*\<" conceal cchar=≥
+  syn match concealOp "\>\s*\zs[!/]=\ze\s*\<" conceal cchar=≠
 
-  syn match Operator "\>\s*\zs==?\ze\s*\<" conceal cchar=≟
-  syn match Operator "\>\s*\zs<?\ze\s*\<" conceal cchar=⩻
-  syn match Operator "\>\s*\zs>?\ze\s*\<" conceal cchar=⩼
+  syn match concealOp "\>\s*\zs==?\ze\s*\<" conceal cchar=≟
+  syn match concealOp "\>\s*\zs<?\ze\s*\<" conceal cchar=⩻
+  syn match concealOp "\>\s*\zs>?\ze\s*\<" conceal cchar=⩼
 
-  syn match Operator "\a\zs0\>" conceal cchar=₀
-  syn match Operator "\a\zs1\>" conceal cchar=₁
-  syn match Operator "\a\zs2\>" conceal cchar=₂
-  syn match Operator "\a\zs3\>" conceal cchar=₃
-  syn match Operator "\a\zs4\>" conceal cchar=₄
-  syn match Operator "\a\zs5\>" conceal cchar=₅
+  syn match concealOp "\a\zs0\>" conceal cchar=₀
+  syn match concealOp "\a\zs1\>" conceal cchar=₁
+  syn match concealOp "\a\zs2\>" conceal cchar=₂
+  syn match concealOp "\a\zs3\>" conceal cchar=₃
+  syn match concealOp "\a\zs4\>" conceal cchar=₄
+  syn match concealOp "\a\zs5\>" conceal cchar=₅
 
   " arith
-  syn match Operator "\>\s\+\zs/\ze\s\+\<" conceal cchar=÷
-  syn match Operator "\>\s*\zs//\ze\s*\<" conceal cchar=➗ "⨸
-  "syn match Operator "\v(import\s+)@8<!(\a|\s)@1<=\*\ze(\a|\s)" conceal cchar=×
-  syn match Operator "[ ]\?\(\^\|\*\*\)[ ]\?2\>" conceal cchar=²
-  syn match Operator "[ ]\?\(\^\|\*\*\)[ ]\?3\>" conceal cchar=³
-  syn match Operator "\<\%([Mm]ath\.\)\?sqrt\>" conceal cchar=√
-  syn match Operator "\<\%([Mm]ath\.\)\?pi\>" conceal cchar=π
+  syn match concealOp "\>\s\+\zs/\ze\s\+\<" conceal cchar=÷
+  syn match concealOp "\>\s*\zs//\ze\s*\<" conceal cchar=➗ "⨸
+  "syn match concealOp "\v(import\s+)@8<!(\a|\s)@1<=\*\ze(\a|\s)" conceal cchar=×
+  syn match concealOp "[ ]\?\(\^\|\*\*\)[ ]\?2\>" conceal cchar=²
+  syn match concealOp "[ ]\?\(\^\|\*\*\)[ ]\?3\>" conceal cchar=³
+  syn match concealOp "\<\%([Mm]ath\.\)\?sqrt\>" conceal cchar=√
+  syn match concealOp "\<\%([Mm]ath\.\)\?pi\>" conceal cchar=π
 
   " abstract math
-  syn match Operator "\>\s*\zs<>\ze\s*\<" conceal cchar=◇
+  syn match concealOp "\>\s*\zs<>\ze\s*\<" conceal cchar=◇
 
   " logic
-  "syn match Operator "\<not\>" conceal cchar=¬
-  "syn match Operator "\<and\>" conceal cchar=∧
-  "syn match Operator "\<or\>" conceal cchar=∨
-  syn match Operator "\>\s*\zs&&\ze\s*\<" conceal cchar=∧
-  syn match Operator "\>\s*\zs||\ze\s*\<" conceal cchar=∨
+  "syn match concealOp "\<not\>" conceal cchar=¬
+  "syn match concealOp "\<and\>" conceal cchar=∧
+  "syn match concealOp "\<or\>" conceal cchar=∨
+  syn match concealOp "\>\s*\zs&&\ze\s*\<" conceal cchar=∧
+  syn match concealOp "\>\s*\zs||\ze\s*\<" conceal cchar=∨
 
   " functional
-  syn match Operator "\<lambda\>" conceal cchar=λ
-  syn match Operator "\<forall\>" conceal cchar=∀
-  syn match Operator "\<exists\>" conceal cchar=∃
-  syn match Operator "\<undefined\>" conceal cchar=⊥
+  syn match concealOp "\<lambda\>" conceal cchar=λ
+  syn match concealOp "\<forall\>" conceal cchar=∀
+  syn match concealOp "\<exists\>" conceal cchar=∃
+  syn match concealOp "\<undefined\>" conceal cchar=⊥
 
   " haskell
-  syn match Operator "`elem`" conceal cchar=∈
-  syn match Operator "\<log\ze\s*\<" conceal cchar=㏒
-  "syn match Operator "\<sum\ze\s*\<" conceal cchar=∑
+  syn match concealOp "`elem`" conceal cchar=∈
+  syn match concealOp "\<log\ze\s*\<" conceal cchar=㏒
+  syn match concealOp "\<sqrt\ze\s*\<" conceal cchar=√
+  "syn match concealOp "\<sum\ze\s*\<" conceal cchar=∑
+  syn match concealOpLam "\(\s\|^\)\zs\\\ze[ _0-9a-zA-Z'\[\](,)]\+->" conceal cchar=λ "nextgroup=concealOpLamSep
+  "syn match concealOpLamSep "[ _0-9a-zA-Z'\[\](,)]*\zs->" conceal cchar=. contained
 
   " proof
-  "syn match Operator ":=" conceal cchar=⩴
-  "syn match Operator "::=" conceal cchar=⩴
+  "syn match concealOp ":=" conceal cchar=⩴
+  "syn match concealOp "::=" conceal cchar=⩴
 
+  hi! link concealOp Operator
+  hi! link concealOpLam Operator
+  hi! link concealOpLamSep Operator
   hi! link Conceal Operator
   setlocal conceallevel=1
 endfun
