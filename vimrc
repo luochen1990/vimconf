@@ -64,7 +64,7 @@ func s:register_plugins()
 	"Plug 'lambdatoast/elm.vim'
 	"Plug 'eagletmt/neco-ghc'
 	"Plug 'raichoo/purescript-vim', {'for': 'purescript'}
-	Plug 'idris-hackers/idris-vim', {'for': 'idris'}
+	Plug 'luochen1990/idris-vim', {'for': 'idris'}
 	"Plug 'trefis/coquille.git'
 	"Plug 'let-def/vimbufsync'
 	"Plug 'gu-fan/riv.vim'
@@ -346,6 +346,7 @@ func s:plugins()
 	\	'rust': ['rustup', 'run', 'stable', 'rls'],
 	\	'go': ['go-langserver'],
 	\}
+	auto User LanguageClientStarted exec "cd ".b:LanguageClient_projectRoot
 
 	"\	'javascript': ['/opt/javascript-typescript-langserver/lib/language-server-stdio.js'],
 	"\	'python': ['pyls'],
@@ -353,7 +354,7 @@ func s:plugins()
 
 	"let g:LanguageClient_changeThrottle = 2 "second
 	let g:LanguageClient_windowLogMessageLevel = "Log"  " Error | Warning | Info | Log
-	let g:LanguageClient_rootMarkers = ['.git*', 'package.*', 'readme*', 'license*']
+	let g:LanguageClient_rootMarkers = ['.git*', 'package.*', 'readme*', 'license*', 'Gopkg.toml']
 
 	let g:LanguageClient_diagnosticsDisplay = {
 	\	1: {
@@ -398,11 +399,13 @@ func s:plugins()
 	let g:vimshell_prompt = '$ '
 	let g:mystatusline_activated = 1
 	let g:rainbow_active = 1
+
 	let g:rainbow_conf = {
 	\	'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick'],
 	\	'ctermfgs': ['darkblue', 'darkyellow', 'darkcyan', 'darkmagenta'],
 	\	'operators': '_,_',
 	\	'parentheses': map(['start=/(/ end=/)/', 'start=/\[/ end=/\]/', 'start=/{/ end=/}/'], 'v:val." fold"'),
+	\	'parentheses_options': 'contains=@NoSpell',
 	\	'separately': {
 	\		'csv': {
 	\			'parentheses': ['start=/\v[^,]*\,/ step=// end=/$/ keepend'],
