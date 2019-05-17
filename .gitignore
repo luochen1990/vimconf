@@ -1,4 +1,5 @@
 /bundle/*
-!/bundle/vundle
-*.old
+/undodir/*
 .DS_Store
+*.old
+

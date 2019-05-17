@@ -84,6 +84,12 @@ func s:general()
 	set autoread "lazyredraw
 	set visualbell t_vb=
 	set history=1000
+	if has('persistent_undo')
+		let &undodir = expand($vimconf.'/undodir')
+		set undofile
+		set undolevels=1000
+		set undoreload=1000
+	endif
 	set nowritebackup nobackup noswapfile
 	set ignorecase smartcase
 	"set tags=tags;
