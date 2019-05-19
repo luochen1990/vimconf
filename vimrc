@@ -32,7 +32,8 @@ func s:register_plugins()
 	Plug 'Shougo/vimfiler.vim'
 	Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 	Plug 'Shougo/vimshell.vim'
-	Plug 'mileszs/ack.vim' "searching tool
+	"Plug 'mileszs/ack.vim' "searching tool
+	Plug 'wsdjeg/FlyGrep.vim'
 	Plug 'tpope/vim-vinegar'
 	Plug 'vim-scripts/Conque-Shell'
 
@@ -402,6 +403,9 @@ func s:plugins()
 	nnoremap <silent> gc :call LanguageClient#textDocument_codeAction()<CR>
 	nnoremap <silent> gs :call LanguageClient#textDocument_documentSymbol()<CR>
 
+	nnoremap <c-s> :FlyGrep<cr>
+	"let g:spacevim_debug_level = 0
+
 	let g:vimshell_prompt = '$ '
 	let g:mystatusline_activated = 1
 	let g:rainbow_active = 1
@@ -485,7 +489,7 @@ func s:plugins()
 	let g:vimfiler_sort_type = 'T' "NOTE: none|size|extension|filename|time, one char for short, upper case for reverse order
 	"https://github.com/Shougo/vimfiler.vim/blob/e15fdc4b52a3d2e082283362ba041126121739f8/autoload/vimfiler/helper.vim#L238
 
-	let g:ackprg = 'ag --vimgrep'
+	"let g:ackprg = 'ag --vimgrep'
 	"let g:ackprg = 'ag --nogroup --nocolor --column'
 
 	if exists('$vimconf')
