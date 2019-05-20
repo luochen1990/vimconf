@@ -767,16 +767,14 @@ func s:keymap()
 	endfunc
 
 	func s:clipboard_synchronizing()
-		"set clipboard+=unnamed
-		noremap x "_x
-		nnoremap y "+y
-		nnoremap d "+d
-		nnoremap p "+p
-		nnoremap <s-p> "+<s-p>
-		vnoremap y "+y
-		vnoremap d "+d
-		vnoremap p "+p
-		"inoremap <a-p> <esc>"+p
+		set clipboard+=unnamed
+
+		"https://unix.stackexchange.com/questions/26654/how-can-i-paste-overwriting-with-vim
+		nnoremap p "0p
+		nnoremap <s-p> "0<s-p>
+		vnoremap p "0p
+
+		nnoremap " :normal! "
 	endfunc
 
 	func s:tab_browsing()
