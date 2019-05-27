@@ -19,7 +19,12 @@ func s:register_plugins()
 	Plug 'luochen1990/select-and-search' " select a piece of code and press n to search next one
 	Plug 'wakatime/vim-wakatime' " time log
 	Plug 'xuhdev/SingleCompile' " compile and run single file
+
 	Plug 'Shougo/deol.nvim' " shell for nvim/vim8 (better vimshell)
+	"Plug 'kassio/neoterm' "terminal
+	Plug 'Shougo/vimproc.vim', {'do' : 'make'}
+	Plug 'Shougo/vimshell.vim'
+
 	Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'} " lsp client: https://microsoft.github.io/language-server-protocol/implementors/tools/
 	Plug 'junegunn/fzf' "(Optional) Multi-entry selection UI.
 
@@ -30,15 +35,13 @@ func s:register_plugins()
 	Plug 'Shougo/unite.vim'
 	"Plug 'Shougo/denite.nvim'
 	Plug 'Shougo/vimfiler.vim'
-	Plug 'Shougo/vimproc.vim', {'do' : 'make'}
-	Plug 'Shougo/vimshell.vim'
 	"Plug 'mileszs/ack.vim' "searching tool
 	Plug 'wsdjeg/FlyGrep.vim'
 	Plug 'tpope/vim-vinegar'
 	Plug 'vim-scripts/Conque-Shell'
 
 	Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
-
+	
 	"Plug 'liuchengxu/space-vim-dark'
 	"Plug 'altercation/vim-colors-solarized'
 	Plug 'tpope/vim-surround'
@@ -716,8 +719,7 @@ func s:keymap()
 		"nnoremap cr :SCCompileRun<cr>
 
 		"compile and execute: 编译当前文件并执行
-		"nnoremap ce :call Compilers('e')<cr>
-		nnoremap ce :SCCompileRun<cr>
+		nnoremap ce :call Compilers('e')<cr>
 
 		"translate: 转译当前文件
 		nnoremap ct :call Compilers('t')<cr>
@@ -770,6 +772,8 @@ func s:keymap()
 		set clipboard+=unnamed
 
 		"https://unix.stackexchange.com/questions/26654/how-can-i-paste-overwriting-with-vim
+		nnoremap d "0d
+		vnoremap d "0d
 		nnoremap p "0p
 		nnoremap <s-p> "0<s-p>
 		vnoremap p "0p

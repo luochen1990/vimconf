@@ -1,6 +1,16 @@
 if exists('s:loaded') | finish | endif | let s:loaded = 1
 
 func CompileRun(mode)
+	if a:mode == 'e'
+		SCCompileRun
+		"normal! :SCCompileRun<cr>
+		return
+	endif
+	"elseif a:mode == 'r'
+	"	TREPLSendFile
+	"	return
+	"endif
+
 	if &filetype == 'cpp'
 		if a:mode == 'e' || a:mode == 'r'
 			if match(getline(1) , '//vc') != -1
