@@ -395,6 +395,7 @@ func s:plugins()
 	\	},
 	\}
 
+	let g:LanguageClient_selectionUI = "quickfix"
 	nnoremap <silent> gm :call LanguageClient_contextMenu()<CR>
 	nnoremap <silent> gt :call LanguageClient#textDocument_typeDefinition()<CR>
 	nnoremap <silent> gT :call LanguageClient#textDocument_signatureHelp()<CR>
