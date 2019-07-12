@@ -22,8 +22,8 @@ fun SynConceal()
   syn match concealOp "\a\zs5\>" conceal cchar=₅
 
   " arith
-  syn match concealOp "\>\s\+\zs/\ze\s\+\<" conceal cchar=÷
-  syn match concealOp "\>\s*\zs//\ze\s*\<" conceal cchar=➗ "⨸
+  "syn match concealOp "\>\s\+\zs/\ze\s\+\<" conceal cchar=÷
+  "syn match concealOp "\>\s*\zs//\ze\s*\<" conceal cchar=➗ "⨸
   "syn match concealOp "\v(import\s+)@8<!(\a|\s)@1<=\*\ze(\a|\s)" conceal cchar=×
   syn match concealOp "[ ]\?\(\^\|\*\*\)[ ]\?2\>" conceal cchar=²
   syn match concealOp "[ ]\?\(\^\|\*\*\)[ ]\?3\>" conceal cchar=³
