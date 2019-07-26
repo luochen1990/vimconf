@@ -1,4 +1,4 @@
-if &cp || exists("g:loaded_zoom")
+if &cp || exists("g:loaded_zoom") || !exists("&guifont")
     finish
 endif
 let g:loaded_zoom = 1
