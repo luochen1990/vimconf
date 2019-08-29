@@ -350,6 +350,7 @@ func s:plugins()
 
 	let g:LanguageClient_autoStart = 1
 	let g:LanguageClient_autoStop = 1
+	let g:LanguageClient_diagnosticsMaxSeverity = "Warning"
 	let g:LanguageClient_settingsPath="~/.LanguageClient_settings.json" "seems not working
 	let g:LanguageClient_serverCommands = {
 	\	'haskell': ['hie-wrapper', '--lsp', '--logfile', '~/.hie.log'],
