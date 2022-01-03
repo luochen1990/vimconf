@@ -773,12 +773,51 @@ func s:keymap()
 	func s:clipboard_synchronizing()
 		set clipboard=unnamedplus
 
+		"let g:clipboard = {
+		"\	'name': 'wsl-clip',
+		"\	'copy': {
+		"\		'+': 'clip.exe',
+		"\		'*': 'clip.exe',
+		"\	},
+		"\	'paste': {
+		"\		'+': 'powershell.exe Get-Clipboard',
+		"\		'*': 'powershell.exe Get-Clipboard',
+		"\	},
+		"\	'cache_enabled': 1,
+		"\}
+
+		"let g:clipboard = {
+		"\	'name': 'wsl-clip',
+		"\	'copy': {
+		"\		'+': 'clip.exe',
+		"\		'*': 'clip.exe',
+		"\	},
+		"\	'paste': {
+		"\		'+': "powershell.exe Get-Clipboard | tr -d '\r'",
+		"\		'*': "powershell.exe Get-Clipboard | tr -d '\r'",
+		"\	},
+		"\	'cache_enabled': 1,
+		"\}
+
+		"let g:clipboard = {
+		"\	'name': 'wsl-clip',
+		"\	'copy': {
+		"\		'+': 'wsl-clip save',
+		"\		'*': 'wsl-clip save',
+		"\	},
+		"\	'paste': {
+		"\		'+': 'wsl-clip load',
+		"\		'*': 'wsl-clip load',
+		"\	},
+		"\	'cache_enabled': 0,
+		"\}
+
 		"https://unix.stackexchange.com/questions/26654/how-can-i-paste-overwriting-with-vim
 		nnoremap d "0d
 		vnoremap d "0d
-		nnoremap p "0p
-		nnoremap <s-p> "0<s-p>
-		vnoremap p "0p
+		nnoremap p "+p
+		nnoremap <s-p> "+<s-p>
+		vnoremap p "+p
 
 		nnoremap " :normal! "
 	endfunc
