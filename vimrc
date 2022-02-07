@@ -20,13 +20,15 @@ func s:register_plugins()
 	Plug 'wakatime/vim-wakatime' " time log
 	Plug 'xuhdev/SingleCompile' " compile and run single file
 
-	Plug 'Shougo/deol.nvim' " shell for nvim/vim8 (better vimshell)
+	"Plug 'Shougo/deol.nvim' " shell for nvim/vim8 (better vimshell)
 	"Plug 'kassio/neoterm' "terminal
 	Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 	Plug 'Shougo/vimshell.vim'
+	"Plug 'vim-scripts/Conque-Shell'
 
 	"Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'} " lsp client: https://microsoft.github.io/language-server-protocol/implementors/tools/
 	Plug 'junegunn/fzf' "(Optional) Multi-entry selection UI.
+	Plug 'akinsho/toggleterm.nvim' " terminal emulator
 
 	" forgotten
 	"Plug 'tpope/vim-fugitive'  "for git
@@ -38,7 +40,6 @@ func s:register_plugins()
 	"Plug 'mileszs/ack.vim' "searching tool
 	Plug 'wsdjeg/FlyGrep.vim'
 	Plug 'tpope/vim-vinegar'
-	Plug 'vim-scripts/Conque-Shell'
 
 	Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
 	
@@ -640,10 +641,12 @@ func s:keymap()
 		auto bufreadpost quickfix nnoremap <buffer> <silent> <cr> <cr>:call Toggle('g:qfix', "copen\n normal! zz", 'cclose')<cr>
 
 		" file explorer
-		nnoremap <c-d> :VimFilerExplorer -force-hide<cr>
 		nnoremap t :VimFilerExplorer -force-hide<cr>
 
 		" shell
+		nnoremap <c-t> :ToggleTerm<cr>
+		inoremap <c-t> <esc>:ToggleTerm<cr>
+
 		nnoremap <c-f> :VimShellPop -toggle<cr>
 		inoremap <c-f> <esc>:VimShellPop -toggle<cr>
 
