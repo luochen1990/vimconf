@@ -81,6 +81,7 @@ func s:register_plugins()
 	Plug 'purescript-contrib/purescript-vim'
 	"Plug 'roxma/nvim-completion-manager'
 	Plug 'derekwyatt/vim-scala'
+	Plug 'LnL7/vim-nix'
 endfunc
 
 func s:general()
@@ -415,19 +416,34 @@ func s:plugins()
 	let g:mystatusline_activated = 1
 	let g:rainbow_active = 1
 
+
 	let g:rainbow_conf = {
-	\	'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick'],
-	\	'ctermfgs': ['darkblue', 'darkyellow', 'darkcyan', 'darkmagenta'],
-	\	'operators': '_,_',
-	\	'parentheses': map(['start=/(/ end=/)/', 'start=/\[/ end=/\]/', 'start=/{/ end=/}/'], 'v:val." fold"'),
-	\	'parentheses_options': 'contains=@NoSpell',
-	\	'separately': {
-	\		'csv': {
-	\			'parentheses': ['start=/\v[^,]*\,/ step=// end=/$/ keepend'],
-	\		},
-	\		'coq': 0,
-	\	}
-	\}
+				\    'guifgs'  : ['RoyalBlue1', 'SeaGreen3', 'Orange', 'IndianRed', 'Magenta'],
+				\    'ctermfgs': ['Blue', 'Cyan', 'Green', 'Red', 'Magenta'] ,
+				\    'operators': '_,_',
+				\    'separately': {
+				\       '*': {},
+				\       'vhdl' : {'parentheses': ['start=/(/ end=/)/ fold',  
+				\                                 'start=/^\s*for\>/ end=/\<end loop\>/ fold', 
+				\                                 'start=/^\s*if\>/ step=/\<\(else\|elsif\)\>/ end=/\<end if\>/ fold', 
+				\                                 'start=/\<generate$/ step=/\<begin\>/ end=/\<end generate\>/ fold',  
+				\                                 'start=/^\s*process\>/ step=/\<begin\>/ end=/\<end process\>/ fold']}
+				\   }
+				\ }
+
+	"let g:rainbow_conf = {
+	"\	'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick'],
+	"\	'ctermfgs': ['darkblue', 'darkyellow', 'darkcyan', 'darkmagenta'],
+	"\	'operators': '_,_',
+	"\	'parentheses': map(['start=/(/ end=/)/', 'start=/\[/ end=/\]/', 'start=/{/ end=/}/'], 'v:val." fold"'),
+	"\	'parentheses_options': 'contains=@NoSpell',
+	"\	'separately': {
+	"\		'csv': {
+	"\			'parentheses': ['start=/\v[^,]*\,/ step=// end=/$/ keepend'],
+	"\		},
+	"\		'coq': 0,
+	"\	}
+	"\}
 
 	let g:syntastic_javascript_checkers = ['eslint']
 	let g:syntastic_always_populate_loc_list = 1
@@ -771,16 +787,57 @@ func s:keymap()
 	endfunc
 
 	func s:clipboard_synchronizing()
-		set clipboard+=unnamed
+		if has('clipboard')
+			set clipboard=unnamedplus
 
-		"https://unix.stackexchange.com/questions/26654/how-can-i-paste-overwriting-with-vim
-		nnoremap d "0d
-		vnoremap d "0d
-		nnoremap p "0p
-		nnoremap <s-p> "0<s-p>
-		vnoremap p "0p
+			"let g:clipboard = {
+			"\	'name': 'wsl-clip',
+			"\	'copy': {
+			"\		'+': 'clip.exe',
+			"\		'*': 'clip.exe',
+			"\	},
+			"\	'paste': {
+			"\		'+': 'powershell.exe Get-Clipboard',
+			"\		'*': 'powershell.exe Get-Clipboard',
+			"\	},
+			"\	'cache_enabled': 1,
+			"\}
 
-		nnoremap " :normal! "
+			"let g:clipboard = {
+			"\	'name': 'wsl-clip',
+			"\	'copy': {
+			"\		'+': 'clip.exe',
+			"\		'*': 'clip.exe',
+			"\	},
+			"\	'paste': {
+			"\		'+': "powershell.exe Get-Clipboard | tr -d '\r'",
+			"\		'*': "powershell.exe Get-Clipboard | tr -d '\r'",
+			"\	},
+			"\	'cache_enabled': 1,
+			"\}
+
+			"let g:clipboard = {
+			"\	'name': 'wsl-clip',
+			"\	'copy': {
+			"\		'+': 'wsl-clip save',
+			"\		'*': 'wsl-clip save',
+			"\	},
+			"\	'paste': {
+			"\		'+': 'wsl-clip load',
+			"\		'*': 'wsl-clip load',
+			"\	},
+			"\	'cache_enabled': 0,
+			"\}
+
+			"https://unix.stackexchange.com/questions/26654/how-can-i-paste-overwriting-with-vim
+			nnoremap d "0d
+			vnoremap d "0d
+			nnoremap p "+p
+			nnoremap <s-p> "+<s-p>
+			vnoremap p "+p
+
+			nnoremap " :normal! "
+		endif
 	endfunc
 
 	func s:tab_browsing()
