@@ -771,7 +771,7 @@ func s:keymap()
 	endfunc
 
 	func s:clipboard_synchronizing()
-		set clipboard+=unnamed
+		set clipboard=unnamedplus
 
 		"https://unix.stackexchange.com/questions/26654/how-can-i-paste-overwriting-with-vim
 		nnoremap d "0d
