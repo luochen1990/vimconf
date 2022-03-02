@@ -25,11 +25,11 @@ func s:register_plugins()
 	Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 	Plug 'Shougo/vimshell.vim'
 
-	Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'} " lsp client: https://microsoft.github.io/language-server-protocol/implementors/tools/
+	"Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'} " lsp client: https://microsoft.github.io/language-server-protocol/implementors/tools/
 	Plug 'junegunn/fzf' "(Optional) Multi-entry selection UI.
 
 	" forgotten
-	Plug 'tpope/vim-fugitive'
+	"Plug 'tpope/vim-fugitive'  "for git
 	"Plug 'mhinz/vim-startify'
 	Plug 'ctrlpvim/ctrlp.vim'
 	Plug 'Shougo/unite.vim'
