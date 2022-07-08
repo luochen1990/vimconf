@@ -41,8 +41,8 @@ nnoremap e :e<space>
 "auto bufenter * exec 'nnoremap <s-e> :e<space>'.expand('%:p:h').'/'
 
 " func s:search_result_browsing()
-nnoremap / 0/\v
-nnoremap <silent> <esc> :noh<cr>zz
+#nnoremap / 0/\v
+#nnoremap <silent> <esc> :noh<cr>zz
 
 " func s:text_browsing()
 
@@ -78,6 +78,9 @@ vnoremap d "0d
 nnoremap p "+p
 nnoremap <s-p> "+<s-p>
 vnoremap p "+p
+nnoremap y "+y
+nnoremap <s-y> "+<s-y>
+vnoremap y "+y
 nnoremap " :normal! "
 
 " func s:mode_switching()
