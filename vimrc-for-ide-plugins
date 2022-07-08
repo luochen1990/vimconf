@@ -34,7 +34,7 @@ nnoremap <s-u> <c-r>
 vnoremap s :s///g<left><left>
 "noremap \h :tab h<space>
 
-nnoremap w :set fenc=<cr>:update<cr>
+nnoremap w :update<cr>
 nnoremap q :q<cr>
 nnoremap e :e<space>
 "nnoremap <s-e> :exec ':e<space>'.expand('$ws')
