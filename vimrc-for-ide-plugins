@@ -1,0 +1,98 @@
+set nocompatible
+
+" func s:editor()
+
+set number showmode showcmd ruler
+set nowrapscan incsearch hlsearch
+set virtualedit=block
+set foldmethod=syntax foldlevel=10
+set autoindent smartindent
+set expandtab smarttab tabstop=4 shiftwidth=4 softtabstop=4
+
+set list
+set listchars=tab:⋮\ ,trail:␣,eol:\ ,nbsp:▫
+set laststatus=2
+
+set nowrap sidescrolloff=20 sidescroll=1
+set wrap textwidth=0 linebreak formatoptions+=mM
+set backspace=start,indent,eol whichwrap=b,<,>,[,]
+
+
+" func s:keymap()
+
+let mapleader = ","
+
+" func s:basic_operation()
+
+map <space> <leader>
+"nnoremap <f1> :nohl<cr>
+nnoremap a <s-a>
+vnoremap <bs> "_x
+nnoremap <s-u> <c-r>
+"nnoremap \/ 0/\v
+"nnoremap s :%s///g<left><left>
+vnoremap s :s///g<left><left>
+"noremap \h :tab h<space>
+
+nnoremap w :set fenc=<cr>:update<cr>
+nnoremap q :q<cr>
+nnoremap e :e<space>
+"nnoremap <s-e> :exec ':e<space>'.expand('$ws')
+"auto bufenter * exec 'nnoremap <s-e> :e<space>'.expand('%:p:h').'/'
+
+" func s:search_result_browsing()
+nnoremap / 0/\v
+nnoremap <silent> <esc> :noh<cr>zz
+
+" func s:text_browsing()
+
+"au insertleave,cursormoved * normal! zz
+noremap j gjzz
+noremap k gkzz
+noremap ^ 0
+noremap 0 ^
+noremap - $
+vnoremap - $h
+"nnoremap f 0f
+noremap n nzz
+noremap <s-n> <s-n>zz
+"vnoremap n :<c-u>let @/='\V'.escape(Get_selected_text(),'\')<cr><esc>nzz
+"vnoremap <s-n> :<c-u>let @/=Get_selected_text()<cr><esc><s-n>zz
+noremap * *zz
+noremap # #zz
+noremap <c-o> <c-o>zz
+noremap <c-i> <c-i>zz
+noremap <s-j> <c-d><s-m>
+noremap <s-k> <c-u><s-m>
+noremap <s-h> b
+noremap <s-l> e
+noremap <a-i> :ZoomIn<cr>
+noremap <a-o> :ZoomOut<cr>
+"nnoremap <space> g<c-]>zz
+nnoremap <cr> g<c-]>zz
+nnoremap <bs> <c-o>zz
+
+" func s:clipboard_synchronizing()
+nnoremap d "0d
+vnoremap d "0d
+nnoremap p "+p
+nnoremap <s-p> "+<s-p>
+vnoremap p "+p
+nnoremap " :normal! "
+
+" func s:mode_switching()
+nnoremap b <c-v>
+vnoremap b <c-v>
+vnoremap ii v<c-v><s-i>
+vnoremap aa v<c-v><s-a>
+vnoremap al <s-g><s-v>gg
+vnoremap v <s-v>
+vnoremap <s-v> v
+
+" record
+nnoremap <a-q> q
+"nnoremap Z <nop>
+nnoremap <s-q> :call Toggle('b:recording', "normal! qr", "normal! q ;; let @r=@r[:-2]")<cr>
+nnoremap R @r
+
+" vim: set fileformat=unix filetype=vim noexpandtab nosmarttab tabstop=4 shiftwidth=4 softtabstop=4:
