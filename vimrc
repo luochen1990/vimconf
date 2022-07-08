@@ -81,6 +81,7 @@ func s:register_plugins()
 	Plug 'purescript-contrib/purescript-vim'
 	"Plug 'roxma/nvim-completion-manager'
 	Plug 'derekwyatt/vim-scala'
+	Plug 'LnL7/vim-nix'
 endfunc
 
 func s:general()
