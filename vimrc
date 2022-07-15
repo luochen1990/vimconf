@@ -750,7 +750,7 @@ func s:keymap()
 		noremap ^ 0
 		noremap 0 ^
 		noremap - $
-		vnoremap - $h
+		vnoremap - g_
 		"nnoremap f 0f
 		noremap n nzz
 		noremap <s-n> <s-n>zz
@@ -761,6 +761,7 @@ func s:keymap()
 		noremap <c-o> <c-o>zz
 		noremap <c-i> <c-i>zz
 		noremap <s-j> <c-d><s-m>
+		noremap <c-j> J
 		noremap <s-k> <c-u><s-m>
 		noremap <s-h> b
 		noremap <s-l> e
