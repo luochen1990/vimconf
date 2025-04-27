@@ -174,10 +174,10 @@ endfunc
 
 func s:encoding()
 	if !has('multi_byte') |echo 'ALERT: vim_not_has_multi_byte' |endif
-	if &termencoding == '' |let &termencoding = &encoding |endif
-	set encoding=utf-8
+	"if &termencoding == '' |let &termencoding = &encoding |endif
+	"set encoding=utf-8 # dynamic set is not supported by neovim
 	setglobal fileencoding=utf-8
-	set termencoding=utf-8
+	"set termencoding=utf-8
 	"set termencoding=cp936
 	"setglobal bomb
 	set fileencodings=ucs-bom,ascii,utf-8,gb2312,cp936,gb18030,big5,euc-jp,euc-kr,latin1
